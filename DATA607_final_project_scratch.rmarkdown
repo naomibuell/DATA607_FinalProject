@@ -13,6 +13,7 @@ library(janitor)
 library(jsonlite)
 ```
 
+
 ## Introduction
 
 I signed up for the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview) from the New York Times. Below is an interface in R to read in the JSON data and transform it into an R data frame. I also attempt to merge this data with data from Letterboxd.
@@ -22,6 +23,7 @@ I signed up for the [Article Search API](https://developer.nytimes.com/docs/arti
 First, I sign up for an API key on the New York Times website. Here, I use the `rstudioapi::skForPassword()` function to keep my API key private when running the code in R Studio. For running and rendering all code for the purposes of this markdown, I also alternatively save the API key in an R chunk that I elect not to include in this published version.
 
 The base HTTP request URL is defined below as well. I will be using the Article Search API to get New York Times movie reviews, so I define the filter query accordingly.
+
 
 ```{r}
 #| label: set up API
@@ -43,7 +45,9 @@ filter <-
 api_key <- "mC1y5Hr361gaqmvkjHpGd6WUdiL917vA"
 ```
 
+
 Here, I create is a function to pull data based on the filter and page number parameters, starting from the newest articles.
+
 
 ```{r}
 #| label: create function
@@ -85,9 +89,11 @@ get_movies <- function(filter, num_pages, timeout) {
 }
 ```
 
+
 ## Load JSON NYT data into R data frame
 
 I call the function, iterating through 20 pages of JSON data, appending them together as the data frame `movies_df`. Note that I add a delay in the loop to avoid hitting the rate limit and getting a 429 error.
+
 
 ```{r}
 #| label: load data from API
@@ -97,7 +103,9 @@ I call the function, iterating through 20 pages of JSON data, appending them tog
 movies_df <- get_movies(filter, 20, 10)
 ```
 
+
 Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
+
 
 ```{r}
 #| label: browse df
@@ -105,9 +113,11 @@ Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
 head(movies_df)
 ```
 
+
 ## Cleaning NYT data
 
 Before I finalize this data set, I subset the data frame to several variables of interest and do some variable cleaning.
+
 
 ```{r}
 #| label: clean variables
@@ -129,7 +139,9 @@ movies_clean <-  movies_df |>
   arrange(desc(pub_date))
 ```
 
+
 I also unnest the data by creating two unique tables–a `movie` table and a `nyt_movies` table–since the keywords variable in the original data frame was a list-column.
+
 
 ```{r}
 #| label: clean
@@ -158,9 +170,11 @@ nyt_movies <- movies_clean |>
 head(nyt_movies)
 ```
 
+
 ## Attempt a Merge w/ Letterboxd Data
 
 Try merging this data with the Letterboxd data:
+
 
 ```{r}
 # load letterboxd data
@@ -180,4 +194,6 @@ perc_merged <- nrow(merged)/nrow(nyt_movies)
 head(merged)
 ```
 
+
 `r round(perc_merged)*100` percent of data from NYT was able to be merged with a Letterboxd rating!
+
