@@ -1,0 +1,179 @@
+---
+title: "Assignment – Web APIs"
+author: "Naomi Buell"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load packages
+#| message: false
+library(tidyverse)
+library(janitor)
+library(jsonlite)
+```
+
+## Introduction
+
+I signed up for the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview) from the New York Times. Below is an interface in R to read in the JSON data and transform it into an R data frame. I also attempt to merge this data with data from Letterboxd.
+
+## Connect to NYT API
+
+First, I sign up for an API key on the New York Times website. Here, I use the `rstudioapi::skForPassword()` function to keep my API key private when running the code in R Studio. For running and rendering all code for the purposes of this markdown, I also alternatively save the API key in an R chunk that I elect not to include in this published version.
+
+The base HTTP request URL is defined below as well. I will be using the Article Search API to get New York Times movie reviews, so I define the filter query accordingly.
+
+```{r}
+#| label: set up API
+#| error: true
+#| message: false
+#| warning: false
+#| results: hide
+api_key <- rstudioapi::askForPassword("Authorization Key")
+
+base_url <-
+  "https://api.nytimes.com/svc/search/v2/articlesearch.json?"
+filter <-
+  'section_name%3A%22Movies%22%20AND%20type_of_material%3A%22Review%22'
+```
+
+```{r}
+#| include: false
+# Alternative to API key generated with the askForPassword function for the purposes of rendering my QMD
+api_key <- "mC1y5Hr361gaqmvkjHpGd6WUdiL917vA"
+```
+
+Here, I create is a function to pull data based on the filter and page number parameters, starting from the newest articles.
+
+```{r}
+#| label: create function
+get_movies <- function(filter, num_pages, timeout) {
+  # initialize data frame
+  df <- tibble()
+  
+  for (page in seq_len(num_pages)) {
+    # set url
+    url <- paste0(base_url,
+                  "fq=",
+                  filter,
+                  "sort=newest&page=",
+                  page,
+                  "&api-key=",
+                  api_key)
+    
+    # initialize success as false before we get a success
+    success <- FALSE
+    
+    while (success == FALSE) {
+      # while success is false,
+      tryCatch({
+        df <- fromJSON(url, flatten = TRUE)$response$docs |>
+          clean_names() |> rbind(df, .data) # append to df
+        success <- TRUE # Set success to TRUE if no error occurs
+      },
+      
+      # if error,
+      error = function(e) {
+        # Add a delay between requests to avoid hitting the rate limit
+        Sys.sleep({timeout})
+      })
+    }
+  }
+  
+  # Return the resulting data frame
+  return(df)
+}
+```
+
+## Load JSON NYT data into R data frame
+
+I call the function, iterating through 20 pages of JSON data, appending them together as the data frame `movies_df`. Note that I add a delay in the loop to avoid hitting the rate limit and getting a 429 error.
+
+```{r}
+#| label: load data from API
+#| message: false
+#| warning: false
+
+movies_df <- get_movies(filter, 20, 10)
+```
+
+Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
+
+```{r}
+#| label: browse df
+
+head(movies_df)
+```
+
+## Cleaning NYT data
+
+Before I finalize this data set, I subset the data frame to several variables of interest and do some variable cleaning.
+
+```{r}
+#| label: clean variables
+
+movies_clean <-  movies_df |>
+  select(
+    headline_main,
+    headline_kicker,
+    headline_print_headline,
+    byline_original,
+    abstract,
+    lead_paragraph,
+    keywords,
+    pub_date
+    
+  ) |>
+  mutate(key = row_number(),
+         pub_date = as_datetime(pub_date)) |>
+  arrange(desc(pub_date))
+```
+
+I also unnest the data by creating two unique tables–a `movie` table and a `nyt_movies` table–since the keywords variable in the original data frame was a list-column.
+
+```{r}
+#| label: clean
+
+# create normal movies table
+movies <- movies_clean |>
+  select(-keywords)
+
+head(movies)
+
+# Regular expression to get text within final parenthetical
+pattern_type <- ".*\\(([^\\(\\)]+)\\)$"
+pattern_title <- "(.*) \\(([^\\(\\)]+)\\)$"
+
+# create normal keywords table
+nyt_movies <- movies_clean |>
+  unnest(keywords, keep_empty = TRUE) |>
+  filter(name == "creative_works") |> 
+  mutate(creative_work_type = str_match(value, pattern_type)[,2] |> 
+           tolower(),
+         name = str_match(value, pattern_title)[,2] |> 
+           tolower()) |> 
+  filter(creative_work_type == "movie") |> 
+  select(-c(value:major, creative_work_type))
+
+head(nyt_movies)
+```
+
+## Attempt a Merge w/ Letterboxd Data
+
+Try merging this data with the Letterboxd data:
+
+```{r}
+# load letterboxd data
+letterboxd_movies <-
+  read_csv(
+    "https://raw.githubusercontent.com/naomibuell/DATA607_FinalProject/main/movies_trimmed.csv"
+  ) |> 
+  drop_na(minute) |> 
+  mutate(name = name |> tolower()) # switching to lower case 
+
+merged <- inner_join(nyt_movies, letterboxd_movies)
+
+perc_merged <- nrow(merged)/nrow(nyt_movies)
+```
+
+`r round(perc_merged)*100` percent of data from NYT was able to be merged with a Letterboxd rating!
