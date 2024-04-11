@@ -15,13 +15,13 @@ library(jsonlite)
 
 ## Introduction
 
-I signed up for the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview) from the New York Times. Below is an interface in R to read in the JSON data and transform it into an R data frame. I also attempt to merge this data with data from Letterboxd.
+We signed up for the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview) from the New York Times. Below is an interface in R to read in the JSON data and transform it into an R data frame. We also attempt to merge this data with data from Letterboxd.
 
 ## Connect to NYT API
 
-First, I sign up for an API key on the New York Times website. Here, I use the `rstudioapi::skForPassword()` function to keep my API key private when running the code in R Studio. For running and rendering all code for the purposes of this markdown, I also alternatively save the API key in an R chunk that I elect not to include in this published version.
+First, we sign up for an API key on the New York Times website. Here, we use the `rstudioapi::skForPassword()` function to keep my API key private when running the code in R Studio. For running and rendering all code for the purposes of this markdown, we also alternatively save the API key in an R chunk that we elect not to include in this published version.
 
-The base HTTP request URL is defined below as well. I will be using the Article Search API to get New York Times movie reviews, so I define the filter query accordingly.
+The base HTTP request URL is defined below as well. We will be using the Article Search API to get New York Times movie reviews, so we define the filter query accordingly.
 
 ```{r}
 #| label: set up API
@@ -43,7 +43,9 @@ filter <-
 api_key <- "mC1y5Hr361gaqmvkjHpGd6WUdiL917vA"
 ```
 
-Here, I create is a function to pull data based on the filter and page number parameters, starting from the newest articles.
+Here, we create is a function to pull data based on the filter and page number parameters, starting from the newest articles.
+
+Note that the Article Search API returns a max of 10 results at a time. We use the page query parameter to paginate through results (page=0 for results 1-10, page=1 for 11-20, etc. You can paginate through up to 100 pages (1,000 results)).
 
 ```{r}
 #| label: create function
@@ -87,14 +89,14 @@ get_movies <- function(filter, num_pages, timeout) {
 
 ## Load JSON NYT data into R data frame
 
-I call the function, iterating through 20 pages of JSON data, appending them together as the data frame `movies_df`. Note that I add a delay in the loop to avoid hitting the rate limit and getting a 429 error.
+We call the function, iterating through 50 pages of JSON data, appending them together as the data frame `movies_df`. Note that we add a delay in the loop to avoid hitting the rate limit and getting a 429 error.
 
 ```{r}
 #| label: load data from API
 #| message: false
 #| warning: false
 
-movies_df <- get_movies(filter, 20, 10)
+nyt_movies_raw <- get_movies(filter, 50, 9)
 ```
 
 Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
@@ -102,78 +104,106 @@ Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
 ```{r}
 #| label: browse df
 
-head(movies_df)
+head(nyt_movies_raw)
 ```
 
 ## Cleaning NYT data
 
-Before I finalize this data set, I subset the data frame to several variables of interest and do some variable cleaning.
+Before we finalize this data set, we subset the data frame to our variables of interest and do some data transformation operations:
+
+-   This includes unnesting the data since the keywords variable in the original data frame was a list-column.
+
+-   We also clean the movie `name` to convert all characters to lowercase and remove parentheticals in the string for matching using REGEX. Then we remove any ", the" at the end of any movie names in the NYT data and any subtitles following a colon (":").
+
+    -   \[NOTE: In addition to pulling movie names from keyword tags, consider pulling them from other text? E.g., searching for the movie name within parentheses? From keywords, we lose about 120 out of 500 review rows that could be about movies (although some are about plays or other creative works).\]
+
+-   We convert NYT publication date column `pub_date` to a datetime format.
 
 ```{r}
 #| label: clean variables
 
-movies_clean <-  movies_df |>
+
+# Regular expressions to get text within final parenthetical of movie title
+media_pattern <- ".*\\(([^\\(\\)]+)\\)$"
+name_pattern <- "(.*) \\(([^\\(\\)]+)\\)$"
+the_pattern <- "^the\\s"
+comma_the_pattern <- ",\\sthe$"
+a_pattern <- "^a\\s"
+comma_a_pattern <- ",\\sa$"
+
+nyt_movies <-  nyt_movies_raw |>
+  # Unnest `keywords` list variable
+  unnest(keywords, keep_empty = TRUE) |>
+  # Correct date column format
+  mutate(
+    pub_date = as_datetime(pub_date),
+    media = str_match(value, media_pattern)[, 2] |>
+      tolower(),
+    # Clean movie titles, removing "the"
+    name = str_match(value, name_pattern)[, 2] |>
+      tolower() |>
+      str_replace(comma_the_pattern, "") |>
+      str_replace(the_pattern, "") |>
+      str_replace(a_pattern, "") |>
+      str_replace(comma_a_pattern, "")
+  ) |>
+  # Filter data to movies only (removing keyword rows for crew, other types of media, etc.)
+  filter(media == "movie") |>
+  # Reorder reviews by publication date
+  arrange(desc(pub_date)) |>
+  # Select variables of interest: columns w/ text for sentiment analysis and merging
   select(
-    headline_main,
-    headline_kicker,
-    headline_print_headline,
-    byline_original,
     abstract,
     lead_paragraph,
-    keywords,
-    pub_date
-    
-  ) |>
-  mutate(key = row_number(),
-         pub_date = as_datetime(pub_date)) |>
-  arrange(desc(pub_date))
-```
-
-I also unnest the data by creating two unique tables–a `movie` table and a `nyt_movies` table–since the keywords variable in the original data frame was a list-column.
-
-```{r}
-#| label: clean
-
-# create normal movies table
-movies <- movies_clean |>
-  select(-keywords)
-
-head(movies)
-
-# Regular expression to get text within final parenthetical
-pattern_type <- ".*\\(([^\\(\\)]+)\\)$"
-pattern_title <- "(.*) \\(([^\\(\\)]+)\\)$"
-
-# create normal keywords table
-nyt_movies <- movies_clean |>
-  unnest(keywords, keep_empty = TRUE) |>
-  filter(name == "creative_works") |> 
-  mutate(creative_work_type = str_match(value, pattern_type)[,2] |> 
-           tolower(),
-         name = str_match(value, pattern_title)[,2] |> 
-           tolower()) |> 
-  filter(creative_work_type == "movie") |> 
-  select(-c(value:major, creative_work_type))
+    name,
+    pub_date,
+    headline_main,
+    headline_kicker,
+    headline_print_headline
+  )
 
 head(nyt_movies)
 ```
 
-## Attempt a Merge w/ Letterboxd Data
+## Merge with Letterboxd Data
 
-Try merging this data with the Letterboxd data:
+Load Letterboxd data and clean variables, editing movie names for merge (removing "the", converting to lowercase).
 
 ```{r}
+#| label: load letterboxd
+  
 # load letterboxd data
 letterboxd_movies <-
   read_csv(
     "https://raw.githubusercontent.com/naomibuell/DATA607_FinalProject/main/movies_trimmed.csv"
-  ) |> 
-  drop_na(minute) |> 
-  mutate(name = name |> tolower()) # switching to lower case 
+  ) |>
+  drop_na(minute) |>
+  mutate(
+    name = tolower(name) |> # switching movie names to lower case
+      # Use str_match() with the pattern
+      str_replace(comma_the_pattern, "") |>
+      str_replace(the_pattern, "") |>
+      str_replace(a_pattern, "") |>
+      str_replace(comma_a_pattern, "")
+  ) |>
+  select(-c(id))
 
 head(letterboxd_movies)
+```
 
-merged <- inner_join(nyt_movies, letterboxd_movies)
+Below, we merge this NYT data with Letterboxd data based on movie `name`. We also pick the best matches based on when the NYT critic reviewed the movie and when Letterboxd says the movie was released, assuming a true match would show the movie reviewed by NYT right when it came out (since Letterboxd only posts the year of release and not the full date, we assume all movies came out on Christmas day for the purposes of this calculation).
+
+```{r}
+#| label: merge Letterboxd and NYT
+
+# First, merge datasets by name. This is a many to many join, so movie-review rows will not be unique, with some extra matches done in error.
+merged <- inner_join(nyt_movies, letterboxd_movies) |>
+  # Get movie-review row with the minimum absolute difference in dates between sources
+  group_by(name) |>
+  # assuming all movies came out on Christmas (popular date for movie release)
+  mutate(dates_diff = abs(difftime(pub_date, as_datetime(paste0(date, "-12-25"))))) |>
+  filter(dates_diff == min(dates_diff)) |>
+  ungroup()
 
 perc_merged <- nrow(merged)/nrow(nyt_movies)
 
@@ -181,3 +211,7 @@ head(merged)
 ```
 
 `r round(perc_merged)*100` percent of data from NYT was able to be merged with a Letterboxd rating!
+
+```{r}
+#| label: check duplicate movie rows
+```
