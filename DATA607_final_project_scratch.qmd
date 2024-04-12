@@ -1,6 +1,6 @@
 ---
-title: "Final Project Testing Feasibility"
-author: "Naomi Buell"
+title: "Final Project"
+author: "Naomi Buell, Nick Kunze, and Kaylie Evans"
 format: html
 editor: visual
 ---
@@ -203,7 +203,9 @@ merged <- inner_join(nyt_movies, letterboxd_movies) |>
   # assuming all movies came out on Christmas (popular date for movie release)
   mutate(dates_diff = abs(difftime(pub_date, as_datetime(paste0(date, "-12-25"))))) |>
   filter(dates_diff == min(dates_diff)) |>
-  ungroup()
+  ungroup() |> 
+  # remove any duplicated rows
+  distinct()
 
 perc_merged <- nrow(merged)/nrow(nyt_movies)
 
@@ -214,4 +216,49 @@ head(merged)
 
 ```{r}
 #| label: check duplicate movie rows
+
+duplicates <- merged |>
+  group_by(name) |>
+  mutate(duplicate = n() > 1) |>
+  filter(duplicate)
+
+num_duplicated_rows <- duplicates |>
+  nrow()/2
 ```
+
+There are only `r duplicate_rows` duplicated movie rows, where a movie title matched to more than one observation in either the Letterboxd or the NYT databases. We can manually review to determine which observation is a true match, then drop the other observation(s).
+
+```{r}
+#| label: manually remove duplicate rows
+
+
+
+```
+
+## Statistical Analysis and Graphic to Describe or Validate Data
+
+Insert analysis/graphic here:
+
+```{r}
+
+```
+
+## Sentiment Analysis of NYT Review using Cloud-based Azure Service
+
+Insert sentiment analysis here:
+
+```{r}
+#| label: sentiment analysis
+
+
+```
+
+Create graphic:
+
+```{r}
+#| label: conclusion graphic
+```
+
+## Conclusion
+
+\[Add conclusion text here\]
