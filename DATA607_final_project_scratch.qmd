@@ -1,6 +1,7 @@
 ---
 title: "Final Project"
 author: "Naomi Buell, Nick Kunze, and Kaylie Evans"
+date: Sys.Date()
 format: html
 editor: visual
 ---
@@ -21,7 +22,7 @@ We signed up for the [Article Search API](https://developer.nytimes.com/docs/art
 
 First, we sign up for an API key on the New York Times website. Here, we use the `rstudioapi::skForPassword()` function to keep my API key private when running the code in R Studio. For running and rendering all code for the purposes of this markdown, we also alternatively save the API key in an R chunk that we elect not to include in this published version.
 
-The base HTTP request URL is defined below as well. We will be using the Article Search API to get New York Times movie reviews, so we define the filter query accordingly.
+The base HTTP request URL is defined below as well.
 
 ```{r}
 #| label: set up API
@@ -33,8 +34,6 @@ api_key <- rstudioapi::askForPassword("Authorization Key")
 
 base_url <-
   "https://api.nytimes.com/svc/search/v2/articlesearch.json?"
-filter <-
-  'section_name%3A%22Movies%22%20AND%20type_of_material%3A%22Review%22'
 ```
 
 ```{r}
@@ -45,7 +44,7 @@ api_key <- "mC1y5Hr361gaqmvkjHpGd6WUdiL917vA"
 
 Here, we create is a function to pull data based on the filter and page number parameters, starting from the newest articles.
 
-Note that the Article Search API returns a max of 10 results at a time. We use the page query parameter to paginate through results (page=0 for results 1-10, page=1 for 11-20, etc. You can paginate through up to 100 pages (1,000 results)).
+Note that the Article Search API returns a max of 10 results at a time. We use the page query parameter to paginate through results (page=0 for results 1-10, page=1 for 11-20, etc. You can paginate through up to 100 pages (1,000 results)). Also note that we add a delay in the loop to avoid hitting the rate limit and getting a 429 error.
 
 ```{r}
 #| label: create function
@@ -89,14 +88,19 @@ get_movies <- function(filter, num_pages, timeout) {
 
 ## Load JSON NYT data into R data frame
 
-We call the function, iterating through 50 pages of JSON data, appending them together as the data frame `movies_df`. Note that we add a delay in the loop to avoid hitting the rate limit and getting a 429 error.
+We call the function, iterating through `num_pages` pages of JSON data, appending them together as the data frame `movies_df`. We will be using the Article Search API to get New York Times movie reviews, so we define the filter query accordingly.
 
 ```{r}
 #| label: load data from API
 #| message: false
 #| warning: false
 
-nyt_movies_raw <- get_movies(filter, 50, 9)
+filter <-
+  'section_name%3A%22Movies%22%20AND%20type_of_material%3A%22Review%22'
+num_pages <- 100
+num_seconds <- 9
+
+nyt_movies_raw <- get_movies(filter, num_pages, num_seconds)
 ```
 
 Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
@@ -111,25 +115,32 @@ head(nyt_movies_raw)
 
 Before we finalize this data set, we subset the data frame to our variables of interest and do some data transformation operations:
 
--   This includes unnesting the data since the keywords variable in the original data frame was a list-column.
+-   The `keywords` variable in the original data frame was a list-column. The `name` of the movie is tagged as a keyword in each review article. We unnest this list-column variable to extract the movie `name`.
 
--   We also clean the movie `name` to convert all characters to lowercase and remove parentheticals in the string for matching using REGEX. Then we remove any ", the" at the end of any movie names in the NYT data and any subtitles following a colon (":").
+-   Clean the movie `name` by
+
+    -   converting all characters to lowercase
+
+    -   removing parentheticals in the string for matching using REGEX
+
+    -   removing any ", the" at the end of any movie names in the NYT data
 
     -   \[NOTE: In addition to pulling movie names from keyword tags, consider pulling them from other text? E.g., searching for the movie name within parentheses? From keywords, we lose about 120 out of 500 review rows that could be about movies (although some are about plays or other creative works).\]
 
--   We convert NYT publication date column `pub_date` to a datetime format.
+-   Convert NYT publication date column `pub_date` to a datetime format.
 
 ```{r}
 #| label: clean variables
 
-
-# Regular expressions to get text within final parenthetical of movie title
-media_pattern <- ".*\\(([^\\(\\)]+)\\)$"
-name_pattern <- "(.*) \\(([^\\(\\)]+)\\)$"
-the_pattern <- "^the\\s"
-comma_the_pattern <- ",\\sthe$"
-a_pattern <- "^a\\s"
-comma_a_pattern <- ",\\sa$"
+# Define REGEX patterns
+media_pattern <-
+  ".*\\(([^\\(\\)]+)\\)$" # to get media type (e.g., "movie", "play", etc.), pull text in final parenthetical of movie title
+name_pattern <-
+  "(.*) \\(([^\\(\\)]+)\\)$" # to get movie title on it's own, remove final parenthetical
+the_pattern <- "^the\\s" # to remove "the" from beginning of movie title
+comma_the_pattern <- ",\\sthe$" # to remove ", the" from end of movie title
+a_pattern <- "^a\\s" # to remove "a" from beginning of movie title
+comma_a_pattern <- ",\\sa$" # to remove ", a" from end of movie title
 
 nyt_movies <-  nyt_movies_raw |>
   # Unnest `keywords` list variable
@@ -165,9 +176,11 @@ nyt_movies <-  nyt_movies_raw |>
 head(nyt_movies)
 ```
 
-## Merge with Letterboxd Data
+Above is our merged data set.
 
-Load Letterboxd data and clean variables, editing movie names for merge (removing "the", converting to lowercase).
+## Load Letterboxd data and clean
+
+Load Letterboxd data and clean variables. We perform the same cleaning transofrmations to the movie `name` variable that we did with the variable of the same name in the NYT data above. Also, we drop movies released before the earliest review in the NYT data (`r min(nyt_movies$pub_date)`); we don't want to merge these older Letterboxd movies since it's unlikely that an NYT critic would review a movie more than a year after its release.
 
 ```{r}
 #| label: load letterboxd
@@ -186,30 +199,92 @@ letterboxd_movies <-
       str_replace(a_pattern, "") |>
       str_replace(comma_a_pattern, "")
   ) |>
-  select(-c(id))
+  select(-c(id)) |> 
+  # only keep Letterboxd data within a similar date range to the NYT data
+  filter(date >= year(min(nyt_movies$pub_date)) - 1)
 
 head(letterboxd_movies)
 ```
+
+## Merge NYT and Letterboxd Data
 
 Below, we merge this NYT data with Letterboxd data based on movie `name`. We also pick the best matches based on when the NYT critic reviewed the movie and when Letterboxd says the movie was released, assuming a true match would show the movie reviewed by NYT right when it came out (since Letterboxd only posts the year of release and not the full date, we assume all movies came out on Christmas day for the purposes of this calculation).
 
 ```{r}
 #| label: merge Letterboxd and NYT
+#| warning: false
+#| message: false
 
 # First, merge datasets by name. This is a many to many join, so movie-review rows will not be unique, with some extra matches done in error.
 merged <- inner_join(nyt_movies, letterboxd_movies) |>
-  # Get movie-review row with the minimum absolute difference in dates between sources
+  
+  # For movies w/ multiple matched rows, choose absolute difference in dates between sources.
   group_by(name) |>
-  # assuming all movies came out on Christmas (popular date for movie release)
-  mutate(dates_diff = abs(difftime(pub_date, as_datetime(paste0(date, "-12-25"))))) |>
-  filter(dates_diff == min(dates_diff)) |>
-  ungroup() |> 
+  mutate(
+    # assuming all movies came out on Christmas (popular date for movie release),
+    release_date = as_datetime(paste0(date, "-12-25")),
+    # calculate absolute diff btwn review and release date
+    dates_diff = abs(difftime(pub_date, release_date))
+  ) |> 
+  filter(dates_diff == min(dates_diff)) |> # for each unique name, get movie row w/ shortest diff between review and release date
+  ungroup() |>
   # remove any duplicated rows
   distinct()
 
+head(merged)
+```
+
+## Statistical Analysis and Graphic to Describe or Validate Data
+
+Now that we have our analysis data set, we can perform a few statistical analyses to describe and validate the merged data.
+
+### Descriptive statistics
+
+Identify discrepancies, check for consistency and completeness. Check for outliers or anomalies in the merged data. Look for consistent data types and formats across the merged data. Look for unexpected patterns that may indicate merge errors.
+
+First, we compare the distribution of dates reported by both data sets:
+
+```{r}
+#| label: numeric descriptive stats: dates
+#| message: false
+#| warning: false
+
+# compare dates for NYT and Letterboxd data
+merged |>
+  ggplot() +
+  geom_histogram(aes(x = pub_date, fill = "Review publication date (source: NYT)"),
+                 alpha = .5, bins =  44) +
+  geom_histogram(aes(x = release_date, fill = "Movie release year (source: Letterbox)"),
+                 alpha = .5, bins = 44) +
+  theme(legend.position = "bottom") +
+  labs(title = "Dates, by data source",
+       x = "Date",
+       y = "Frequency")
+```
+
+Both movie release and review publication dates align well between data sources.
+
+```{r}
+# check movie duration (mins) for outliers
+
+# Check ratings for outliers
+
+# create boxplot of each to investigate outliers
+```
+
+Plot histograms or box plots of key variables from the merged data and original sources. Look for shifts in the distribution that may indicate merge errors. If you have time-series data, plot trends from the original sources and the merged data to see if there are any unexpected discrepancies.
+
+```{r}
+
+```
+
+### **Data Quality Assessment/Overlap Analysis**
+
+Check the number of records and variables from each source that were merged. Identify any missing or duplicate records.
+
+```{r}
 perc_merged <- nrow(merged)/nrow(nyt_movies)
 
-head(merged)
 ```
 
 `r round(perc_merged)*100` percent of data from NYT was able to be merged with a Letterboxd rating!
@@ -232,14 +307,6 @@ There are only `r duplicate_rows` duplicated movie rows, where a movie title mat
 #| label: manually remove duplicate rows
 
 
-
-```
-
-## Statistical Analysis and Graphic to Describe or Validate Data
-
-Insert analysis/graphic here:
-
-```{r}
 
 ```
 
