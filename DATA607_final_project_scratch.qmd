@@ -224,7 +224,7 @@ merged <- inner_join(nyt_movies, letterboxd_movies) |>
     # assuming all movies came out on Christmas (popular date for movie release),
     release_date = as_datetime(paste0(date, "-12-25")),
     # calculate absolute diff btwn review and release date
-    dates_diff = abs(difftime(pub_date, release_date))
+    dates_diff = abs(difftime(pub_date, release_date, units = "days"))
   ) |> 
   filter(dates_diff == min(dates_diff)) |> # for each unique name, get movie row w/ shortest diff between review and release date
   ungroup() |>
@@ -234,60 +234,99 @@ merged <- inner_join(nyt_movies, letterboxd_movies) |>
 head(merged)
 ```
 
-## Statistical Analysis and Graphic to Describe or Validate Data
+## Describe and Validate Analysis Data set
 
-Now that we have our analysis data set, we can perform a few statistical analyses to describe and validate the merged data.
+Now that we have our analysis data set, we can perform a few statistical analyses to describe and validate the merged data. The following section checks our data set that we'll use for analysis for outliers, consistency, completeness, and any discrepancies between the merged data sets that would indicate merge errors.
 
 ### Descriptive statistics
 
-Identify discrepancies, check for consistency and completeness. Check for outliers or anomalies in the merged data. Look for consistent data types and formats across the merged data. Look for unexpected patterns that may indicate merge errors.
-
-First, we compare the distribution of dates reported by both data sets:
+First, we generate summary statistics and compare the distribution of the dates reported by both data sets:
 
 ```{r}
-#| label: numeric descriptive stats: dates
+#| label: numeric descriptive stats - dates
 #| message: false
 #| warning: false
+
+merged  |> 
+  select(pub_date, date) |> 
+  summary()
 
 # compare dates for NYT and Letterboxd data
 merged |>
   ggplot() +
-  geom_histogram(aes(x = pub_date, fill = "Review publication date (source: NYT)"),
-                 alpha = .5, bins =  44) +
-  geom_histogram(aes(x = release_date, fill = "Movie release year (source: Letterbox)"),
-                 alpha = .5, bins = 44) +
+  geom_histogram(
+    aes(x = pub_date, fill = "Merged Review publication date (source: NYT)"),
+    alpha = .5,
+    bins =  44
+  ) +
+  geom_histogram(
+    aes(x = release_date, fill = "Merged Movie release year (source: Letterbox)"),
+    alpha = .5,
+    bins = 44
+  ) +
   theme(legend.position = "bottom") +
   labs(title = "Dates, by data source",
        x = "Date",
        y = "Frequency")
 ```
 
-Both movie release and review publication dates align well between data sources.
+Both movie release and review publication dates align well between data sources. They start and end around the same time. Both have peaks in the early 2000's and around 2020's, with a major dip in the late 2000's. This lack of data around the late 2000's stems from the limited NYT data, not the Letterboxd data.
+
+Next we'll check the distribution and outliers of the other numerical data, all from the Letterboxd data set:
 
 ```{r}
-# check movie duration (mins) for outliers
+#| label: Check movie duration (mins) for outliers
 
-# Check ratings for outliers
+summary(merged$minute)
 
-# create boxplot of each to investigate outliers
+merged |>
+  ggplot(aes(x = minute/60)) +
+  geom_histogram(bins = 60) +
+  labs(title = "Movie length",
+       x = "Length in hours (source: Letterboxd)")
 ```
 
-Plot histograms or box plots of key variables from the merged data and original sources. Look for shifts in the distribution that may indicate merge errors. If you have time-series data, plot trends from the original sources and the merged data to see if there are any unexpected discrepancies.
+The distribution is centered around about `r round(median(merged$minute/60), 2)` hours. There are many high outliers in terms of movie length (max `r round(max(merged$minute/60))` hours)–likely due to full television or movie series being included in the database. We elect not to remove these outliers because they can be genuine matches. For e.g., the longest film in the data, "Heimat" was 924 minutes long according to Letterboxd and was reviewed by the NYT, confirming that this chronicle of Germany "will be broadcast for the first time on cable on Bravo in eight parts."
+
+Next we check user ratings for outliers:
 
 ```{r}
+#| label: summarize rating
+#| message: false
+#| warning: false
 
+summary(merged$rating)
+
+merged |>
+  ggplot(aes(x = rating)) +
+  geom_histogram() +
+  labs(title = "User ratings",
+       x = "Average movie user rating (source: Letterboxd)")
+```
+
+Average movie ratings in this data-set range from `r min(merged$rating)` to `r max(merged$rating)`. The average average `rating` on Letterboxd is `r mean(movies$rating)`. The data looks normal but is slightly left skewed. This is expected.
+
+```{r}
+#| label: Check ratings for outliers
+
+merged |>
+  ggplot(aes(x = rating)) +
+  geom_boxplot() 
 ```
 
 ### **Data Quality Assessment/Overlap Analysis**
 
-Check the number of records and variables from each source that were merged. Identify any missing or duplicate records.
+Here, we check the number of records and variables from each source that were merged. The Letterboxd data was much larger than what we pulled from NYT using the API (`r nrow(letterboxd_movies)` vs. `r nrow(nyt_movies_raw)` movies long, respectively), so the NYT data was the limiting factor for the merge in terms of the length of our final data set.
 
 ```{r}
-perc_merged <- nrow(merged)/nrow(nyt_movies)
+#| label: percent merged
 
+perc_merged <- nrow(merged)/nrow(nyt_movies)
 ```
 
-`r round(perc_merged)*100` percent of data from NYT was able to be merged with a Letterboxd rating!
+However, `r round(perc_merged)*100` percent of data from NYT was able to be merged with a Letterboxd rating.
+
+Here, we identify any duplicate records:
 
 ```{r}
 #| label: check duplicate movie rows
@@ -297,14 +336,16 @@ duplicates <- merged |>
   mutate(duplicate = n() > 1) |>
   filter(duplicate)
 
+head(duplicates)
+
 num_duplicated_rows <- duplicates |>
   nrow()/2
 ```
 
-There are only `r duplicate_rows` duplicated movie rows, where a movie title matched to more than one observation in either the Letterboxd or the NYT databases. We can manually review to determine which observation is a true match, then drop the other observation(s).
+There are `r duplicate_rows` duplicated movies, where one movie `name` from the NYT matched to two observations with the same movie `name` (and release year) in the Letterboxd database. We can manually review to determine which observation is a true match, then drop the other observation(s).
 
 ```{r}
-#| label: manually remove duplicate rows
+#| label: manually remove duplicate rows?
 
 
 
