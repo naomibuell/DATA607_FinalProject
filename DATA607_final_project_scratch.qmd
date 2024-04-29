@@ -16,7 +16,7 @@ library(jsonlite)
 
 ## Introduction
 
-We signed up for the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview) from the New York Times. Below is an interface in R to read in the JSON data and transform it into an R data frame. We also attempt to merge this data with data from Letterboxd.
+We signed up for the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview) from the New York Times. Below is an interface in R to read in the JSON data and transform it into an R data frame. We also merge this data with data from Letterboxd.
 
 ## Connect to NYT API
 
@@ -125,8 +125,6 @@ Before we finalize this data set, we subset the data frame to our variables of i
 
     -   removing any ", the" at the end of any movie names in the NYT data
 
-    -   \[NOTE: In addition to pulling movie names from keyword tags, consider pulling them from other text? E.g., searching for the movie name within parentheses? From keywords, we lose about 120 out of 500 review rows that could be about movies (although some are about plays or other creative works).\]
-
 -   Convert NYT publication date column `pub_date` to a datetime format.
 
 ```{r}
@@ -180,7 +178,7 @@ Above is our merged data set.
 
 ## Load Letterboxd data and clean
 
-Load Letterboxd data and clean variables. We perform the same cleaning transofrmations to the movie `name` variable that we did with the variable of the same name in the NYT data above. Also, we drop movies released before the earliest review in the NYT data (`r min(nyt_movies$pub_date)`); we don't want to merge these older Letterboxd movies since it's unlikely that an NYT critic would review a movie more than a year after its release.
+Load Letterboxd data and clean variables. We perform the same cleaning transformations to the movie `name` variable that we did with the variable of the same name in the NYT data above. Also, we drop movies released before the earliest review in the NYT data (`r min(nyt_movies$pub_date)`); we don't want to merge these older Letterboxd movies since it's unlikely that an NYT critic would review a movie more than a year after its release.
 
 ```{r}
 #| label: load letterboxd
@@ -351,7 +349,7 @@ There are `r duplicate_rows` duplicated movies, where one movie `name` from the 
 
 ```
 
-## Sentiment Analysis of NYT Review using Cloud-based Azure Service
+## Sentiment and Regression Analysis of NYT Review
 
 Insert sentiment analysis here:
 
