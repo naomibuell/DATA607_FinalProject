@@ -118,7 +118,7 @@ filter <-
 num_pages <- 100
 num_seconds <- 9
 
-nyt_movies_raw <- get_movies(base_url, api_key, filter, num_pages, num_seconds)
+nyt_movies_raw <- get_movies(filter, num_pages, num_seconds)
 ```
 
 Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
