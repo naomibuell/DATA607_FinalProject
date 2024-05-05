@@ -15,6 +15,10 @@ library(jsonlite)
 library(tibble)
 library(foreach)
 library(doParallel)
+library(qdapDictionaries)
+library(tidytext)
+library(rvest)
+library(vader)
 ```
 
 ## Introduction
@@ -114,7 +118,7 @@ filter <-
 num_pages <- 100
 num_seconds <- 9
 
-nyt_movies_raw <- get_movies(filter, num_pages, num_seconds)
+nyt_movies_raw <- get_movies(base_url, api_key, filter, num_pages, num_seconds)
 ```
 
 Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
@@ -177,7 +181,7 @@ nyt_movies <-  nyt_movies_raw |>
   # Select variables of interest: columns w/ text for sentiment analysis and merging
   select(
     abstract,
-    lead_paragraph,
+    web_url,
     name,
     pub_date,
     headline_main,
@@ -354,24 +358,108 @@ num_duplicated_rows <- duplicates |>
   nrow()/2
 ```
 
-There are `r duplicate_rows` duplicated movies, where one movie `name` from the NYT matched to two observations with the same movie `name` (and release year) in the Letterboxd database. We can manually review to determine which observation is a true match, then drop the other observation(s).
+There are `r duplicate_rows` duplicated movies, where one movie `name` from the NYT matched to two observations with the same movie `name` (and release year) in the Letterboxd database. We can manually review to determine which observation is a true match, then drop the other observation(s). A good way to automate the checking of true matches, which may be necessary with larger datasets, could be to group by multiple columns along with *name* such as *pub_date* or *minute* (movie length). In this case, each of these are true matches, and therefore all duplicates can be removed safely.
 
 ```{r}
-#| label: manually remove duplicate rows?
+#| label: remove duplicates
 
+merged_no_dupl <- merged %>% 
+  distinct(name, .keep_all = TRUE)
+```
 
+## Web Scraping Full NYT Reviews
 
+As the API only provides the first paragraph/snippet from the movie review, we'll need to scrape the HTML hosted on the NYT website for the full text. Luckily, the API provides the URI via the web_url field and every element containing review text contains the unique class StoryBodyCompanionColumn. This allows us to easily pull the text from the HTML elements as a character vector and collapse it into a single string, adding it as a new column in our data frame.
+
+We do all of this after the merging and cleaning to minimize the amount of scraping we need to perform to only the movies reviews we will be analyzing, reducing our HTML requests by almost half and memory utilization by over 2 megabytes. That may seem small, but for larger datasets, 50% reduction is a large amount.
+
+We have a NYT digital subscription, preventing any license agreement issues concerning the text.
+
+```{r}
+reviewScrape = function(uri, output){
+  success <- FALSE
+    
+  while (success == FALSE) {
+    tryCatch({
+      htmlText <- read_html(uri["web_url"]) %>%
+        html_nodes(".StoryBodyCompanionColumn") %>%
+        html_text() %>%
+        paste(.,collapse = )
+      success <- TRUE # Set success to TRUE if no error occurs
+    }, error = function(e) {
+      print("Error: "+e)
+      Sys.sleep(9)
+    })
+  }
+  
+  # return review text 
+  return(htmlText)
+}
+```
+
+```{r}
+reviews <- apply(merged_no_dupl,1,reviewScrape  )
+merged_no_dupl$review <- reviews
 ```
 
 ## Sentiment and Regression Analysis of NYT Review
 
-Insert sentiment analysis here:
+Now that we have our merged and tidied data, we can perform some deeper analysis of these reviews provided by the NYT API. When performing sentiment analysis, choosing the right dictionary, or lexicon, is important. There already exist [analyses of](https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-017-0121-9) [different lexicons](https://medium.com/@laurenflynn1211/comparing-sentiment-analysis-dictionaries-in-r-c695fca64326), but we will replicate some of those thoughts and analyses here. In general, it's important to choose domain-specific lexicons to ensure proper sentiment analysis of words used and highest possible coverage of words in the text being analyzed.
+
+The three lexicons we'll be utilizing against our movie reviews are AFINN, as it is a lexicon from the tidytext package we've used previously, VADER, a lexicon specifically attuned to sentiments expressed in social media, and labMT, as its dictionary was partially built directly from New York Times publications; they all use a numerical scale for rating the *positivity*, *valence,* or *happiness* of a word.
+
+labMT and AFINN require us to load up our dictionaries to join with our tokenized reviews, but VADER provides a usefull get_vader() function that returns the score of each word in the text as well as the average.
 
 ```{r}
-#| label: sentiment analysis
+#| label: loading of sentiment dictionaries
 
-
+data(labMT)
+afinn <- get_sentiments("afinn")
 ```
+
+```{r}
+#| label: movies sentiment analysis function
+
+sentimentAnalysis = function(movie, output){
+  # Break up our reviews into word vector, minus stop words
+  reviewWords <- as.tibble(movie["review"]) %>% 
+    unnest_tokens(word,value) %>% 
+    anti_join(stop_words)
+  
+  movie["afinn"] <- reviewWords %>% 
+    inner_join(afinn) %>%
+    summarise(sentiment = mean(value)) %>%
+    mutate(movie = fg$name)
+  movie["labmt"] <- reviewWords %>% 
+    inner_join(labMT) %>%
+    summarise(sentiment = mean(happiness_average)) %>%
+    mutate(movie = fg$name)
+  movie["vader"] <- get_vader(movie["review"][[1]])[2]
+  return(movie)
+}
+```
+
+```{r warning=FALSE}
+# Suppressed to hide join by messages
+sa <- suppressMessages(do.call(rbind.data.frame, apply(merged_no_dupl,1,sentimentAnalysis  )))
+```
+
+```{r}
+par(mfrow = c(1, 3))
+
+cor(as.numeric(sa$rating),sa$afinn)
+cor(as.numeric(sa$rating),sa$labmt)
+cor(as.numeric(sa$rating),as.numeric(sa$vader))
+
+plot(sa$afinn,sa$rating, main="AFINN",
+  xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
+plot(sa$labmt,sa$rating, main="LabMT",
+  xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
+plot(sa$vader,sa$rating, main="VADER",
+  xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
+```
+
+I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by letterboxd, but it appears there is none. With these three lexicons, I would be better of with vader, but not by much. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer letterboxd rating based on sentiment.
 
 Create graphic:
 
@@ -382,3 +470,7 @@ Create graphic:
 ## Conclusion
 
 \[Add conclusion text here\]
+
+## **References**
+
+Dodds, Peter Sheridan, Kameron Decker Harris, Isabel M. Kloumann, Catherine A. Bliss, and Christopher M. Danforth. “Temporal patterns of happiness and information in a global social network: Hedonometrics and Twitter.” *PLoS ONE* 6, no. 12 (2011).
