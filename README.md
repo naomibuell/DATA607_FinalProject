@@ -24,6 +24,14 @@ This project utilizes several R packages, including:
 
 -   jsonlite
 
+-   qdapDictionaries
+
+-   tidytext
+
+-   rvest
+
+-   vader
+
 Ensure that these packages are installed and loaded before running the code.
 
 ### Connect to NYT API, Load JSON data into R

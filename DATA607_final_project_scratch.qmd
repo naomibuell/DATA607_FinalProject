@@ -349,8 +349,10 @@ There are `r duplicate_rows` duplicated movies, where one movie `name` from the 
 ```{r}
 #| label: remove duplicates
 
-merged_no_dupl <- merged %>% 
+merged_no_dupl <- merged |> 
   distinct(name, .keep_all = TRUE)
+
+head(merged_no_dupl)
 ```
 
 ## Web Scraping Full NYT Reviews
@@ -362,29 +364,30 @@ We do all of this after the merging and cleaning to minimize the amount of scrap
 We have a NYT digital subscription, preventing any license agreement issues concerning the text.
 
 ```{r}
-reviewScrape = function(uri, output){
+reviewScrape <- function(url) {
   success <- FALSE
-    
+  
   while (success == FALSE) {
     tryCatch({
-      htmlText <- read_html(uri["web_url"]) %>%
-        html_nodes(".StoryBodyCompanionColumn") %>%
-        html_text() %>%
-        paste(.,collapse = )
+      htmlText <- read_html(url) |>
+        html_nodes(".StoryBodyCompanionColumn") |>
+        html_text() |>
+        paste0()
       success <- TRUE # Set success to TRUE if no error occurs
     }, error = function(e) {
-      print("Error: "+e)
-      Sys.sleep(9)
+      print(paste0("Error: ", e))
+      Sys.sleep(num_seconds)
     })
   }
   
-  # return review text 
+  # return review text
   return(htmlText)
 }
 ```
 
 ```{r}
-reviews <- apply(merged_no_dupl,1,reviewScrape  )
+reviews <- lapply(merged_no_dupl$web_url, reviewScrape)
+
 merged_no_dupl$review <- reviews
 ```
 
@@ -427,7 +430,7 @@ sentimentAnalysis = function(movie, output){
 
 ```{r warning=FALSE}
 # Suppressed to hide join by messages
-sa <- suppressMessages(do.call(rbind.data.frame, apply(merged_no_dupl,1,sentimentAnalysis  )))
+sa <- suppressMessages(do.call(rbind.data.frame, apply(merged_no_dupl, 1, sentimentAnalysis)))
 ```
 
 ```{r}
