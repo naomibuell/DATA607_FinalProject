@@ -12,9 +12,6 @@ editor: visual
 library(tidyverse)
 library(janitor)
 library(jsonlite)
-library(tibble)
-library(foreach)
-library(doParallel)
 library(qdapDictionaries)
 library(tidytext)
 library(rvest)
@@ -56,14 +53,10 @@ Note that the Article Search API returns a max of 10 results at a time. We use t
 ```{r}
 #| label: create function
 get_movies <- function(filter, num_pages, timeout) {
-  # Initialize data frame
+  # initialize data frame
   df <- tibble()
   
-  # Initialize parallel processing
-  registerDoParallel()
-  
-  # Use foreach with %dopar% to parallelize the loop
-  df <- foreach(page = seq_len(num_pages), .combine = rbind) %dopar% {
+  for (page in seq_len(num_pages)) {
     # set url
     url <- paste0(base_url,
                   "fq=",
@@ -76,32 +69,25 @@ get_movies <- function(filter, num_pages, timeout) {
     # initialize success as false before we get a success
     success <- FALSE
     
-    # Fetch data for the current page
-    while (!success) {
+    while (success == FALSE) {
+      # while success is false,
       tryCatch({
-        page_df <- fromJSON(url, flatten = TRUE)$response$docs |>
-          as_tibble() |>
-          clean_names() |>
-          mutate(page = page)  # Add page number as a column
-        success <- TRUE
+        df <- fromJSON(url, flatten = TRUE)$response$docs |>
+          clean_names() |> rbind(df, .data) # append to df
+        success <- TRUE # Set success to TRUE if no error occurs
       },
+      
+      # if error,
       error = function(e) {
         # Add a delay between requests to avoid hitting the rate limit
-        Sys.sleep(timeout)
+        Sys.sleep({timeout})
       })
     }
-    
-    # Return the data for the current page
-    return(page_df)
   }
-  
-  # End parallel processing
-  stopImplicitCluster()
   
   # Return the resulting data frame
   return(df)
 }
-
 ```
 
 ## Load JSON NYT data into R data frame
@@ -473,4 +459,4 @@ Create graphic:
 
 ## **References**
 
-Dodds, Peter Sheridan, Kameron Decker Harris, Isabel M. Kloumann, Catherine A. Bliss, and Christopher M. Danforth. “Temporal patterns of happiness and information in a global social network: Hedonometrics and Twitter.” *PLoS ONE* 6, no. 12 (2011).
+Dodds, Peter Sheridan, Kameron Decker Harris, Isabel M. Kloumann, Catherine A. Bliss, and Christopher M. Danforth. “Temporal patterns of happiness and information in a global social network: Hedonometrics and Twitter.” *PLoS ONE* 6, no. 12 (2011).
