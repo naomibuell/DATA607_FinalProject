@@ -407,7 +407,7 @@ afinn <- get_sentiments("afinn")
 ```
 
 ```{r}
-#| label: movies sentiment analysis function
+#| label: movies sentiment analysis
 
 # Getting sentiments without a function. Get afinn and labMT sentiment by word
 sa_afinn_labMT <- merged_no_dupl |> 
@@ -439,9 +439,9 @@ sa <- sa_collapsed |>
 ```{r}
 par(mfrow = c(1, 3))
 
-cor(as.numeric(sa$rating),sa$afinn)
-cor(as.numeric(sa$rating),sa$happiness_average)
-cor(as.numeric(sa$rating),as.numeric(sa$compound))
+cor(as.numeric(sa$rating),sa$afinn, na.rm = TRUE)
+cor(as.numeric(sa$rating),sa$happiness_average, na.rm = TRUE)
+cor(as.numeric(sa$rating),as.numeric(sa$compound), na.rm = TRUE)
 
 plot(sa$afinn,sa$rating, main="AFINN",
   xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
@@ -451,7 +451,7 @@ plot(sa$compound,sa$rating, main="VADER",
   xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
 ```
 
-I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by letterboxd, but it appears there is none. With these three lexicons, I would be better of with vader, but not by much. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer letterboxd rating based on sentiment.
+I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by Letterboxd, but it appears there is none. With these three lexicons, I would be better off with Vader, but not by much. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer letterboxd rating based on sentiment.
 
 Create graphic:
 
