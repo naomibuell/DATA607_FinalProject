@@ -402,7 +402,7 @@ Now that we have our merged and tidied data, we can perform some deeper analysis
 
 The three lexicons we'll be utilizing against our movie reviews are AFINN, as it is a lexicon from the tidytext package we've used previously, VADER, a lexicon specifically attuned to sentiments expressed in social media, and labMT, as its dictionary was partially built directly from New York Times publications; they all use a numerical scale for rating the *positivity*, *valence,* or *happiness* of a word.
 
-labMT and AFINN require us to load up our dictionaries to join with our tokenized reviews, but VADER provides a usefull get_vader() function that returns the score of each word in the text as well as the average.
+labMT and AFINN require us to load up our dictionaries to join with our tokenized reviews, but VADER provides a useful get_vader() function that returns the score of each word in the text as well as the average.
 
 ```{r}
 #| label: loading of sentiment dictionaries
@@ -412,7 +412,7 @@ afinn <- get_sentiments("afinn")
 ```
 
 ```{r}
-#| label: movies sentiment analysis function
+#| label: movies sentiment analysis
 
 # Getting sentiments without a function. Get afinn and labMT sentiment by word
 sa_afinn_labMT <- merged_no_dupl |> 
@@ -496,4 +496,4 @@ By incorporating specialized lexicons and exploring additional features, future 
 
 ## **References**
 
-Dodds, Peter Sheridan, Kameron Decker Harris, Isabel M. Kloumann, Catherine A. Bliss, and Christopher M. Danforth. “Temporal patterns of happiness and information in a global social network: Hedonometrics and Twitter.” *PLoS ONE* 6, no. 12 (2011).
+1.  Dodds, Peter Sheridan, Kameron Decker Harris, Isabel M. Kloumann, Catherine A. Bliss, and Christopher M. Danforth. “Temporal patterns of happiness and information in a global social network: Hedonometrics and Twitter.” *PLoS ONE* 6, no. 12 (2011).
