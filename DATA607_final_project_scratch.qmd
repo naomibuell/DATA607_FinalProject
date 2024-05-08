@@ -461,7 +461,7 @@ plot(sa$compound, sa$rating, main="VADER", xlab="NYT Sentiment Mean", ylab="Lett
 abline(lm(sa$rating ~ sa$compound), col="darkred")
 ```
 
-I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by letterboxd, but it appears there is none. With these three lexicons, I would be better of with vader, but not by much. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer letterboxd rating based on sentiment.
+I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by letterboxd, but it appears there is none. With these three lexicons, only VADER shows any kind of relationship, albeit the opposite of what we would expect. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer letterboxd rating based on sentiment.
 
 Conclusion analysis and graphic: Comparison of NYT review sentiments vs. Letterboxd numerical rating for matched movies. How do professional movie critics differ from Letterboxd users?
 
