@@ -84,10 +84,12 @@ All cleaning and tidying was completed in R. Below describes steps taken to prep
 
 ## Analysis
 
-[Insert analysis text here]
+In the sentiment analysis, the lexicon VADER performed slightly better than AFINN and labMT; however, it still did not show a strong correlation with the Letterboxd ratings. This suggests that using generic sentiment lexicons may not capture the nuances of movie reviews accurately. Utilizing specialized lexicons tailored to movie reviews or employing machine learning models to infer ratings based on sentiment may yield better results.
 
 ## Conclusion
 
+The analysis outcomes suggest that there is commonly a disconnect between the viewpoints of critics and audiences concerning movies. The key conclusion drawn is that critics' reviews do not consistently reflect audience opinions.
+
 This README provides an overview of the code and data analysis conducted for our Final Project. Further details and insights can be found within the code and associated analysis outputs.
 
-[Insert conclusion text here]
+
