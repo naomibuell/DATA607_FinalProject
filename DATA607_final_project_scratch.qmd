@@ -275,6 +275,19 @@ merged |>
   labs(title = "Dates, by data source",
        x = "Date",
        y = "Frequency")
+
+# examine the difference between review and release dates
+merged |> 
+  ggplot(aes(x = dates_diff)) +
+  geom_histogram(bins = 100) +
+  labs(title = "Most movies have very little difference between timing of review and release.",
+       x = "Difference between release and review date in days")
+
+merged |> 
+  mutate(dates_diff = as.numeric(dates_diff)) |> 
+  select(dates_diff) |> 
+  summary()
+  
 ```
 
 Both movie release and review publication dates align well between data sources. They start and end around the same time. Both have peaks in the early 2000's and around 2020's, with a major dip in the late 2000's. This lack of data around the late 2000's stems from the limited NYT data, not the Letterboxd data.
