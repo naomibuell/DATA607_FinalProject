@@ -16,11 +16,16 @@ library(qdapDictionaries)
 library(tidytext)
 library(rvest)
 library(vader)
+library(ggplot2)
 ```
 
 ## Introduction
 
-We signed up for the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview) from the New York Times. Below is an interface in R to read in the JSON data and transform it into an R data frame. We also merge this data with data from Letterboxd.
+We signed up for the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview) from the New York Times. This project navigates the complexities of fetching JSON data and converting it into a clean, tidy and coherent R data frame using R tools and other packages. By merging this data with average movie reviews from Letterboxd, we embark on a journey to understand audience reactions.
+
+Letterboxd is an app where users review movies, providing numerical average scores. The New York Times reviews are critics' reviews consisting of paragraphs. We use sentiment analysis to quantify these reviews.
+
+Appreciating how movies are judged is crucial for fully grasping how people react to them. This project looks closely at quantifying how movies are critiqued. By studying both critics' opinions and audience ratings, the project uncovers the different views that shape how movies are assessed.
 
 ## Connect to NYT API
 
@@ -407,7 +412,7 @@ afinn <- get_sentiments("afinn")
 ```
 
 ```{r}
-#| label: movies sentiment analysis
+#| label: movies sentiment analysis function
 
 # Getting sentiments without a function. Get afinn and labMT sentiment by word
 sa_afinn_labMT <- merged_no_dupl |> 
@@ -436,32 +441,58 @@ sa <- sa_collapsed |>
   bind_cols(sa_collapsed)
 ```
 
-```{r}
+```{r, warning=FALSE}
 par(mfrow = c(1, 3))
 
-cor(as.numeric(sa$rating),sa$afinn, na.rm = TRUE)
-cor(as.numeric(sa$rating),sa$happiness_average, na.rm = TRUE)
-cor(as.numeric(sa$rating),as.numeric(sa$compound), na.rm = TRUE)
+cor(as.numeric(sa$rating),sa$afinn)
+cor(as.numeric(sa$rating),sa$happiness_average)
+cor(as.numeric(sa$rating),as.numeric(sa$compound))
 
-plot(sa$afinn,sa$rating, main="AFINN",
-  xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
-plot(sa$happiness_average,sa$rating, main="LabMT",
-  xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
-plot(sa$compound,sa$rating, main="VADER",
-  xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
+# AFINN
+plot(sa$afinn, sa$rating, main="AFINN", xlab="NYT Sentiment Mean", ylab="Letterboxd Rating") 
+abline(lm(sa$rating ~ sa$afinn), col="darkred")
+
+# LabMT
+plot(sa$happiness_average, sa$rating, main="LabMT", xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
+abline(lm(sa$rating ~ sa$happiness_average), col="darkred")
+
+# VADER
+plot(sa$compound, sa$rating, main="VADER", xlab="NYT Sentiment Mean", ylab="Letterboxd Rating")
+abline(lm(sa$rating ~ sa$compound), col="darkred")
 ```
 
-I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by Letterboxd, but it appears there is none. With these three lexicons, I would be better off with Vader, but not by much. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer letterboxd rating based on sentiment.
+I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by letterboxd, but it appears there is none. With these three lexicons, I would be better of with vader, but not by much. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer letterboxd rating based on sentiment.
 
-Create graphic:
+Conclusion analysis and graphic: Comparison of NYT review sentiments vs. Letterboxd numerical rating for matched movies. How do professional movie critics differ from Letterboxd users?
 
 ```{r}
 #| label: conclusion graphic
+# Heatmap of rating, year of review, and happiness average 
+ggplot(sa, aes(x = date, y = round(rating))) +
+  geom_tile(aes(fill = happiness_average), color = "white") +
+  scale_fill_gradient(low = "navy", high = "pink", name = "Audience Score") +  
+  labs(title = "Sentiment Scores vs. Ratings Heatmap",
+       x = "Review Year",
+       y = "Critic Rating")
 ```
+
+## Reflection on Project
+
+The lack of a strong linear relationship between the sentiment analyses and the critic movie rating by Letterboxd across all lexicons suggests that sentiment alone may not be a strong predictor of how critics rate movies. This indicates that other factors beyond sentiment, such as plot, acting, direction, and thematic depth, likely influence critics' evaluations.
+
+The comparison between NYT review sentiments and Letterboxd ratings highlights potential differences in how professional movie critics and general users perceive and evaluate movies. Professional critics may focus more on aspects like cinematography, storytelling, and thematic depth, while user ratings on platforms like Letterboxd may be influenced by personal preferences, entertainment value, and emotional resonance.
+
+While VADER performed slightly better than AFINN and labMT, it still did not show a strong correlation with the Letterboxd ratings. This suggests that using generic sentiment lexicons may not capture the nuances of movie reviews accurately. Utilizing specialized lexicons tailored to movie reviews or employing machine learning models to infer ratings based on sentiment may yield better results. Initially considered but not included in the final version of this project are NRC and Loughlan lexicons, which were attempted but were redundant in the results and analysis.
+
+To better understand the differences between professional critics and Letterboxd users, future analyses could involve: Developing specialized sentiment lexicons tailored to movie reviews, capturing industry-specific terminology and critical language. Exploring additional features beyond sentiment, such as genre, directorial style, and production budget, to understand their impact on ratings.
 
 ## Conclusion
 
-\[Add conclusion text here\]
+Overall, the project underscores the complexity of movie evaluation and the importance of considering multiple factors beyond sentiment alone when analyzing critical responses. It also highlights the fact that critics and audiences do not share one opinion on movies. The conclusion graphics suggest that critics' reviews alone may not reliably predict audience opinions on films.
+
+To effectively communicate these findings, the comparative analysis graphic illustrates the sentiment scores derived from the NYT reviews alongside the corresponding Letterboxd ratings for a set of matched movies. This visual representation can highlight the divergence between professional critics' sentiments and user ratings, providing insights into the distinct perspectives and evaluation criteria of each group.
+
+By incorporating specialized lexicons and exploring additional features, future research can enhance our understanding of how different audiences perceive and rate movies, ultimately contributing to more nuanced and accurate analyses of film criticism.
 
 ## **References**
 
