@@ -369,6 +369,8 @@ We do all of this after the merging and cleaning to minimize the amount of scrap
 We have a NYT digital subscription, preventing any license agreement issues concerning the text.
 
 ```{r}
+#| label: function for scraping reviews
+
 reviewScrape <- function(url) {
   success <- FALSE
   
@@ -391,6 +393,8 @@ reviewScrape <- function(url) {
 ```
 
 ```{r}
+#| label: scrape reviews
+
 reviews <- lapply(merged_no_dupl$web_url, reviewScrape)
 
 merged_no_dupl$review <- reviews
@@ -406,6 +410,8 @@ labMT and AFINN require us to load up our dictionaries to join with our tokenize
 
 ```{r}
 #| label: loading of sentiment dictionaries
+#| warning: false
+#| message: false
 
 data(labMT)
 afinn <- get_sentiments("afinn")
@@ -461,7 +467,7 @@ plot(sa$compound, sa$rating, main="VADER", xlab="NYT Sentiment Mean", ylab="Lett
 abline(lm(sa$rating ~ sa$compound), col="darkred")
 ```
 
-I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by letterboxd, but it appears there is none. With these three lexicons, only VADER shows any kind of relationship, albeit the opposite of what we would expect. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer letterboxd rating based on sentiment.
+I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by Letterboxd, but it appears there is none. With these three lexicons, only VADER shows any kind of relationship, albeit the opposite of what we would expect. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer Letterboxd rating based on sentiment.
 
 Conclusion analysis and graphic: Comparison of NYT review sentiments vs. Letterboxd numerical rating for matched movies. How do professional movie critics differ from Letterboxd users?
 
