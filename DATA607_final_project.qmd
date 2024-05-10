@@ -362,7 +362,7 @@ num_duplicated_rows <- duplicates |>
   nrow()/2
 ```
 
-There are `r duplicate_rows` duplicated movies, where one movie `name` from the NYT matched to two observations with the same movie `name` (and release year) in the Letterboxd database. We can manually review to determine which observation is a true match, then drop the other observation(s). A good way to automate the checking of true matches, which may be necessary with larger datasets, could be to group by multiple columns along with *name* such as *pub_date* or *minute* (movie length). In this case, each of these are true matches, and therefore all duplicates can be removed safely.
+There are `r num_duplicated_rows` duplicated movies, where one movie `name` from the NYT matched to two observations with the same movie `name` (and release year) in the Letterboxd database. We can manually review to determine which observation is a true match, then drop the other observation(s). A good way to automate the checking of true matches, which may be necessary with larger datasets, could be to group by multiple columns along with *name* such as *pub_date* or *minute* (movie length). In this case, each of these are true matches, and therefore all duplicates can be removed safely.
 
 ```{r}
 #| label: remove duplicates
