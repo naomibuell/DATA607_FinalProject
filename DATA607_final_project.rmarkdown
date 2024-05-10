@@ -19,6 +19,7 @@ library(vader)
 library(ggplot2)
 ```
 
+
 ## Introduction
 
 We signed up for the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview) from the New York Times. This project navigates the complexities of fetching JSON data and converting it into a clean, tidy and coherent R data frame using R tools and other packages. By merging this data with average movie reviews from Letterboxd, we embark on a journey to understand audience reactions.
@@ -32,6 +33,7 @@ Appreciating how movies are judged is crucial for fully grasping how people reac
 First, we sign up for an API key on the New York Times website. Here, we use the `rstudioapi::skForPassword()` function to keep my API key private when running the code in R Studio. For running and rendering all code for the purposes of this markdown, we also alternatively save the API key in an R chunk that we elect not to include in this published version.
 
 The base HTTP request URL is defined below as well.
+
 
 ```{r}
 #| label: set up API
@@ -51,9 +53,11 @@ base_url <-
 api_key <- "mC1y5Hr361gaqmvkjHpGd6WUdiL917vA"
 ```
 
+
 Here, we create is a function to pull data based on the filter and page number parameters, starting from the newest articles.
 
 Note that the Article Search API returns a max of 10 results at a time. We use the page query parameter to paginate through results (page=0 for results 1-10, page=1 for 11-20, etc. You can paginate through up to 100 pages (1,000 results)). Also note that we add a delay in the loop to avoid hitting the rate limit and getting a 429 error.
+
 
 ```{r}
 #| label: create function
@@ -95,9 +99,11 @@ get_movies <- function(filter, num_pages, timeout) {
 }
 ```
 
+
 ## Load JSON NYT data into R data frame
 
 We call the function, iterating through `num_pages` pages of JSON data, appending them together as the data frame `movies_df`. We will be using the Article Search API to get New York Times movie reviews, so we define the filter query accordingly.
+
 
 ```{r}
 #| label: load data from API
@@ -112,13 +118,16 @@ num_seconds <- 9
 nyt_movies_raw <- get_movies(filter, num_pages, num_seconds)
 ```
 
+
 Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
+
 
 ```{r}
 #| label: browse df
 
 head(nyt_movies_raw)
 ```
+
 
 ## Cleaning NYT data
 
@@ -135,6 +144,7 @@ Before we finalize this data set, we subset the data frame to our variables of i
     -   removing any ", the" at the end of any movie names in the NYT data
 
 -   Convert NYT publication date column `pub_date` to a datetime format.
+
 
 ```{r}
 #| label: clean variables
@@ -183,11 +193,13 @@ nyt_movies <-  nyt_movies_raw |>
 head(nyt_movies)
 ```
 
+
 Above is our merged data set.
 
 ## Load Letterboxd data and clean
 
 Load Letterboxd data and clean variables. We perform the same cleaning transformations to the movie `name` variable that we did with the variable of the same name in the NYT data above. Also, we drop movies released before the earliest review in the NYT data (`r min(nyt_movies$pub_date)`); we don't want to merge these older Letterboxd movies since it's unlikely that an NYT critic would review a movie more than a year after its release.
+
 
 ```{r}
 #| label: load letterboxd
@@ -213,9 +225,11 @@ letterboxd_movies <-
 head(letterboxd_movies)
 ```
 
+
 ## Merge NYT and Letterboxd Data
 
 Below, we merge this NYT data with Letterboxd data based on movie `name`. We also pick the best matches based on when the NYT critic reviewed the movie and when Letterboxd says the movie was released, assuming a true match would show the movie reviewed by NYT right when it came out (since Letterboxd only posts the year of release and not the full date, we assume all movies came out on Christmas day for the purposes of this calculation).
+
 
 ```{r}
 #| label: merge Letterboxd and NYT
@@ -241,6 +255,7 @@ merged <- inner_join(nyt_movies, letterboxd_movies) |>
 head(merged)
 ```
 
+
 ## Describe and Validate Analysis Data set
 
 Now that we have our analysis data set, we can perform a few statistical analyses to describe and validate the merged data. The following section checks our data set that we'll use for analysis for outliers, consistency, completeness, and any discrepancies between the merged data sets that would indicate merge errors.
@@ -248,6 +263,7 @@ Now that we have our analysis data set, we can perform a few statistical analyse
 ### Descriptive statistics
 
 First, we generate summary statistics and compare the distribution of the dates reported by both data sets:
+
 
 ```{r}
 #| label: numeric descriptive stats - dates
@@ -290,9 +306,11 @@ merged |>
   
 ```
 
+
 Both movie release and review publication dates align well between data sources. They start and end around the same time. Both have peaks in the early 2000's and around 2020's, with a major dip in the late 2000's. This lack of data around the late 2000's stems from the limited NYT data, not the Letterboxd data.
 
 Next we'll check the distribution and outliers of the other numerical data, all from the Letterboxd data set:
+
 
 ```{r}
 #| label: Check movie duration (mins) for outliers
@@ -306,9 +324,11 @@ merged |>
        x = "Length in hours (source: Letterboxd)")
 ```
 
+
 The distribution is centered around about `r round(median(merged$minute/60), 2)` hours. There are many high outliers in terms of movie length (max `r round(max(merged$minute/60))` hours)–likely due to full television or movie series being included in the database. We elect not to remove these outliers because they can be genuine matches. For e.g., the longest film in the data, "Heimat" was 924 minutes long according to Letterboxd and was reviewed by the NYT, confirming that this chronicle of Germany "will be broadcast for the first time on cable on Bravo in eight parts."
 
 Next we check user ratings for outliers:
+
 
 ```{r}
 #| label: summarize rating
@@ -324,7 +344,9 @@ merged |>
        x = "Average movie user rating (source: Letterboxd)")
 ```
 
+
 Average movie ratings in this data-set range from `r min(merged$rating)` to `r max(merged$rating)`. The average average `rating` on Letterboxd is `r mean(merged$rating)`. The data looks normal but is slightly left skewed. This is expected.
+
 
 ```{r}
 #| label: Check ratings for outliers
@@ -334,9 +356,11 @@ merged |>
   geom_boxplot() 
 ```
 
+
 ### Data Quality Assessment/Overlap Analysis
 
 Here, we check the number of records and variables from each source that were merged. The Letterboxd data was much larger than what we pulled from NYT using the API (`r nrow(letterboxd_movies)` vs. `r nrow(nyt_movies_raw)` movies long, respectively), so the NYT data was the limiting factor for the merge in terms of the length of our final data set.
+
 
 ```{r}
 #| label: percent merged
@@ -344,9 +368,11 @@ Here, we check the number of records and variables from each source that were me
 perc_merged <- nrow(merged)/nrow(nyt_movies)
 ```
 
+
 However, `r round(perc_merged)*100` percent of data from NYT was able to be merged with a Letterboxd rating.
 
 Here, we identify any duplicate records:
+
 
 ```{r}
 #| label: check duplicate movie rows
@@ -362,7 +388,9 @@ num_duplicated_rows <- duplicates |>
   nrow()/2
 ```
 
+
 There are `r duplicate_rows` duplicated movies, where one movie `name` from the NYT matched to two observations with the same movie `name` (and release year) in the Letterboxd database. We can manually review to determine which observation is a true match, then drop the other observation(s). A good way to automate the checking of true matches, which may be necessary with larger datasets, could be to group by multiple columns along with *name* such as *pub_date* or *minute* (movie length). In this case, each of these are true matches, and therefore all duplicates can be removed safely.
+
 
 ```{r}
 #| label: remove duplicates
@@ -373,6 +401,7 @@ merged_no_dupl <- merged |>
 head(merged_no_dupl)
 ```
 
+
 ## Web Scraping Full NYT Reviews
 
 As the API only provides the first paragraph/snippet from the movie review, we'll need to scrape the HTML hosted on the NYT website for the full text. Luckily, the API provides the URI via the web_url field and every element containing review text contains the unique class StoryBodyCompanionColumn. This allows us to easily pull the text from the HTML elements as a character vector and collapse it into a single string, adding it as a new column in our data frame.
@@ -380,6 +409,7 @@ As the API only provides the first paragraph/snippet from the movie review, we'l
 We do all of this after the merging and cleaning to minimize the amount of scraping we need to perform to only the movies reviews we will be analyzing, reducing our HTML requests by almost half and memory utilization by over 2 megabytes. That may seem small, but for larger datasets, 50% reduction is a large amount.
 
 We have a NYT digital subscription, preventing any license agreement issues concerning the text.
+
 
 ```{r}
 #| label: function for scraping reviews
@@ -413,6 +443,7 @@ reviews <- lapply(merged_no_dupl$web_url, reviewScrape)
 merged_no_dupl$review <- reviews
 ```
 
+
 ## Sentiment and Regression Analysis of NYT Review
 
 Now that we have our merged and tidied data, we can perform some deeper analysis of these reviews provided by the NYT API. When performing sentiment analysis, choosing the right dictionary, or lexicon, is important. There already exist [analyses of](https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-017-0121-9) [different lexicons](https://medium.com/@laurenflynn1211/comparing-sentiment-analysis-dictionaries-in-r-c695fca64326), but we will replicate some of those thoughts and analyses here. In general, it's important to choose domain-specific lexicons to ensure proper sentiment analysis of words used and highest possible coverage of words in the text being analyzed.
@@ -420,6 +451,7 @@ Now that we have our merged and tidied data, we can perform some deeper analysis
 The three lexicons we'll be utilizing against our movie reviews are AFINN, as it is a lexicon from the tidytext package we've used previously, VADER, a lexicon specifically attuned to sentiments expressed in social media, and labMT, as its dictionary was partially built directly from New York Times publications; they all use a numerical scale for rating the *positivity*, *valence,* or *happiness* of a word.
 
 labMT and AFINN require us to load up our dictionaries to join with our tokenized reviews, but VADER provides a useful get_vader() function that returns the score of each word in the text as well as the average.
+
 
 ```{r}
 #| label: loading of sentiment dictionaries
@@ -480,9 +512,11 @@ plot(sa$compound, sa$rating, main="VADER", xlab="NYT Sentiment Mean", ylab="Lett
 abline(lm(sa$rating ~ sa$compound), col="darkred")
 ```
 
+
 I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by Letterboxd, but it appears there is none. With these three lexicons, only VADER shows any kind of relationship, albeit the opposite of what we would expect. For such a niche medium as "movie reviews", it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer Letterboxd rating based on sentiment.
 
 Conclusion analysis and graphic: Comparison of NYT review sentiments vs. Letterboxd numerical rating for matched movies. How do professional movie critics differ from Letterboxd users?
+
 
 ```{r}
 #| label: conclusion graphic
@@ -494,6 +528,7 @@ ggplot(sa, aes(x = date, y = round(rating))) +
        x = "Review Year",
        y = "Critic Rating")
 ```
+
 
 ## Reflection on Project
 
@@ -516,3 +551,4 @@ By incorporating specialized lexicons and exploring additional features, future 
 ## References
 
 1.  Dodds, Peter Sheridan, Kameron Decker Harris, Isabel M. Kloumann, Catherine A. Bliss, and Christopher M. Danforth. “Temporal patterns of happiness and information in a global social network: Hedonometrics and Twitter.” *PLoS ONE* 6, no. 12 (2011).
+
