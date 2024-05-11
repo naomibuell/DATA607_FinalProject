@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Naomi Buell, Nick Kunze, and Kaylie Evans">
+
+<title>Final Project</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="DATA607_final_project_files/libs/clipboard/clipboard.min.js"></script>
+<script src="DATA607_final_project_files/libs/quarto-html/quarto.js"></script>
+<script src="DATA607_final_project_files/libs/quarto-html/popper.min.js"></script>
+<script src="DATA607_final_project_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="DATA607_final_project_files/libs/quarto-html/anchor.min.js"></script>
+<link href="DATA607_final_project_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="DATA607_final_project_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="DATA607_final_project_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="DATA607_final_project_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="DATA607_final_project_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Final Project</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Naomi Buell, Nick Kunze, and Kaylie Evans </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Invalid Date</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'janitor' was built under R version 4.3.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(qdapDictionaries)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tidytext' was built under R version 4.3.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rvest)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vader)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'vader' was built under R version 4.3.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>We signed up for the <a href="https://developer.nytimes.com/docs/articlesearch-product/1/overview">Article Search API</a> from the New York Times. This project navigates the complexities of fetching JSON data and converting it into a clean, tidy and coherent R data frame using R tools and other packages. By merging this data with average movie reviews from Letterboxd, we embark on a journey to understand audience reactions.</p>
+<p>Letterboxd is an app where users review movies, providing numerical average scores. The New York Times reviews are critics’ reviews consisting of paragraphs. We use sentiment analysis to quantify these reviews.</p>
+<p>Appreciating how movies are judged is crucial for fully grasping how people react to them. This project looks closely at quantifying how movies are critiqued. By studying both critics’ opinions and audience ratings, the project uncovers the different views that shape how movies are assessed.</p>
+</section>
+<section id="connect-to-nyt-api" class="level2">
+<h2 class="anchored" data-anchor-id="connect-to-nyt-api">Connect to NYT API</h2>
+<p>First, we sign up for an API key on the New York Times website. Here, we use the <code>rstudioapi::skForPassword()</code> function to keep my API key private when running the code in R Studio. For running and rendering all code for the purposes of this markdown, we also alternatively save the API key in an R chunk that we elect not to include in this published version.</p>
+<p>The base HTTP request URL is defined below as well.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>api_key <span class="ot">&lt;-</span> rstudioapi<span class="sc">::</span><span class="fu">askForPassword</span>(<span class="st">"Authorization Key"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error: RStudio not running</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>base_url <span class="ot">&lt;-</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://api.nytimes.com/svc/search/v2/articlesearch.json?"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here, we create is a function to pull data based on the filter and page number parameters, starting from the newest articles.</p>
+<p>Note that the Article Search API returns a max of 10 results at a time. We use the page query parameter to paginate through results (page=0 for results 1-10, page=1 for 11-20, etc. You can paginate through up to 100 pages (1,000 results)). Also note that we add a delay in the loop to avoid hitting the rate limit and getting a 429 error.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>get_movies <span class="ot">&lt;-</span> <span class="cf">function</span>(filter, num_pages, timeout) {</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># initialize data frame</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">tibble</span>()</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (page <span class="cf">in</span> <span class="fu">seq_len</span>(num_pages)) {</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># set url</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_url,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"fq="</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>                  filter,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"sort=newest&amp;page="</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                  page,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"&amp;api-key="</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                  api_key)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># initialize success as false before we get a success</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    success <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> (success <span class="sc">==</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>      <span class="co"># while success is false,</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tryCatch</span>({</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        df <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(url, <span class="at">flatten =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>response<span class="sc">$</span>docs <span class="sc">|&gt;</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>          <span class="fu">clean_names</span>() <span class="sc">|&gt;</span> <span class="fu">rbind</span>(df, .data) <span class="co"># append to df</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>        success <span class="ot">&lt;-</span> <span class="cn">TRUE</span> <span class="co"># Set success to TRUE if no error occurs</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>      },</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>      <span class="co"># if error,</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Add a delay between requests to avoid hitting the rate limit</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Sys.sleep</span>({timeout})</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>      })</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return the resulting data frame</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-json-nyt-data-into-r-data-frame" class="level2">
+<h2 class="anchored" data-anchor-id="load-json-nyt-data-into-r-data-frame">Load JSON NYT data into R data frame</h2>
+<p>We call the function, iterating through <code>num_pages</code> pages of JSON data, appending them together as the data frame <code>movies_df</code>. We will be using the Article Search API to get New York Times movie reviews, so we define the filter query accordingly.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>filter <span class="ot">&lt;-</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">'section_name%3A%22Movies%22%20AND%20type_of_material%3A%22Review%22'</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>num_pages <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>num_seconds <span class="ot">&lt;-</span> <span class="dv">9</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(<span class="st">"nyt_movies_raw.rdat"</span>)) {</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">load</span>(<span class="st">"nyt_movies_raw.rdat"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  nyt_movies_raw <span class="ot">&lt;-</span> <span class="fu">get_movies</span>(filter, num_pages, num_seconds)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">save</span>(nyt_movies_raw, <span class="at">file =</span> <span class="st">"nyt_movies_raw.rdat"</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here is the R data frame of NYT JSON movie review data loaded from the NYT API:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(nyt_movies_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        abstract
+1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  Housebond voyeur suspects neighbor of murder. Tasteful, engaging update of Hitchcock classic.
+2                                                                                                                                                                                                                                                                                                                                                                                                            LIKE the young German martyrs whose World War II story it tells, Michael Verhoeven's ''White Rose'' is resoundingly decent and sincere. The intrinsically stirring story of these dissidents, who risked their lives to disseminate anti-Nazi literature in the Munich of 1942 and 1943, is enough to give this film an almost automatic emotional power.    While Mr. Verhoeven's pacing isn't always galvanizing, and while the individual characters seem somewhat faceless at times (despite the camera's habit of photographing them at intimately close range), ''The White Rose'' has an honesty and urgency that override its occasional colorlessness. It's a forthright tale of heroism, plainly and deliberately told.  
+3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              Not even necrophilia and the imaginative deployment of leeches can relieve this exercise in unrelenting dullness.
+4                                                                                                                                                                                                                                                                                                                                                                                                           THE annual flood of holiday albums has poured onto record-store shelves. Stars are ready to personalize the old songs or put a wintertime twist on their usual styles; unknowns hope familiar material will help them find new listeners. Pious or raunchy, ethnic or homogenized, blue or sentimental, unabashedly corny or determinedly hip, they all try to pack holiday feelings into cozy commodities. At the same time the holidays also bring out music packages that won't be obsolete on Dec. 26: compilations, greatest-hits albums and reissued albums. Below, the rock and jazz critics of The Times survey the seasonal bounty. (Individual CD's range from $11.97 to $28.97; two-CD sets range from $19.97 to $31.97.)
+5   PAUL THEROUX'S adventure novel ''The Mosquito Coast'' has a much bleaker vision than the movie directed by Peter Weir and starring Harrison Ford. But even with some of the more acerbic qualities of the book's antihero, Allie Fox, toned down, it took more than three years for the producer, Jerome Hellman, to raise the money to shoot a movie that most studio executives found simply not sufficiently ''high-concept.'' What is high-concept?  ''It has absolutely no meaning, as far as I can tell,'' Mr. Hellman said. ''I guess it's an idea that can be expressed in a sentence so simplistic that there is no chance of confusion, and it probably entails an upbeat ending. If we had been willing to have Allie emerge a changed man who learned from his experience and took his family back to New England, we would have had no trouble.''   The story is that of a man horrified at what he believes is the degeneration of America into a society of fast food, crime, hypocrisy and lack of initiative. He decides to take his family to the Mosquito Coast, the wild jungle land of Central America, and start over.
+6                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  “Love in the Time of Cholera” is faithful to the outline of the novel but emotionally and spiritually anemic.
+                                                                                                         web_url
+1                                 https://www.nytimes.com/1983/10/09/movies/and-james-stewart-recalls-hitch.html
+2                           https://www.nytimes.com/1983/05/06/movies/the-white-rose-students-against-nazis.html
+3                                                          https://www.nytimes.com/2006/06/08/movies/08psyc.html
+4 https://www.nytimes.com/2000/12/08/movies/reissues-albums-wishing-you-a-merry-with-a-ha-ha-and-a-ho-ho-ho.html
+5                                                   https://www.nytimes.com/1986/11/21/movies/at-the-movies.html
+6                                                          https://www.nytimes.com/2007/11/16/movies/16chol.html
+                                                                                                            snippet
+1                     Housebond voyeur suspects neighbor of murder. Tasteful, engaging update of Hitchcock classic.
+2                                                                                                                  
+3 Not even necrophilia and the imaginative deployment of leeches can relieve this exercise in unrelenting dullness.
+4                                                                                                                  
+5                                                                                                                  
+6     “Love in the Time of Cholera” is faithful to the outline of the novel but emotionally and spiritually anemic.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 lead_paragraph
+1                                                                                                                                                                                                                                                                             L.B. Jeffries, the inquiring photographer whose broken leg prevents him from doing anything more strenuous than gazing out his window, is back. And he's in very good company, or soon will be. He will be joined by John ''Scottie'' Ferguson, who loves one woman because she reminds him of another and who is paralyzed by his fear of heights; Dr. Ben McKenna, whose child is kidnapped as part of an international assassination plot; and Rupert Cadell, a professor who attends a party and solves a murder mystery in the same apartment, and on the very same evening.
+2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     LIKE the young German martyrs whose World War II story it tells, Michael Verhoeven's ''White Rose'' is resoundingly decent and sincere. The intrinsically stirring story of these dissidents, who risked their lives to disseminate anti-Nazi literature in the Munich of 1942 and 1943, is enough to give this film an almost automatic emotional power.
+3                                                                                                                                                                                                                                                                                                                                                                    Anyone popping in to "Psychopathia Sexualis" hoping for a classier "Basic Instinct" or perhaps a sneak peek at Woody Allen's memoirs will be sorely disappointed. Named for the notorious 1886 text by Richard Freiherr von Krafft-Ebing, a German psychiatrist whose specialty was sexual perversion, the movie reconstructs four of the book's colorful case histories. But applying the scientific method to carnal behavior is one thing; applying it to moviemaking is quite another.
+4                                                                                                                          THE annual flood of holiday albums has poured onto record-store shelves. Stars are ready to personalize the old songs or put a wintertime twist on their usual styles; unknowns hope familiar material will help them find new listeners. Pious or raunchy, ethnic or homogenized, blue or sentimental, unabashedly corny or determinedly hip, they all try to pack holiday feelings into cozy commodities. At the same time the holidays also bring out music packages that won't be obsolete on Dec. 26: compilations, greatest-hits albums and reissued albums. Below, the rock and jazz critics of The Times survey the seasonal bounty. (Individual CD's range from $11.97 to $28.97; two-CD sets range from $19.97 to $31.97.)
+5 PAUL THEROUX'S adventure novel ''The Mosquito Coast'' has a much bleaker vision than the movie directed by Peter Weir and starring Harrison Ford. But even with some of the more acerbic qualities of the book's antihero, Allie Fox, toned down, it took more than three years for the producer, Jerome Hellman, to raise the money to shoot a movie that most studio executives found simply not sufficiently ''high-concept.'' What is high-concept? ''It has absolutely no meaning, as far as I can tell,'' Mr. Hellman said. ''I guess it's an idea that can be expressed in a sentence so simplistic that there is no chance of confusion, and it probably entails an upbeat ending. If we had been willing to have Allie emerge a changed man who learned from his experience and took his family back to New England, we would have had no trouble.''
+6                                                                                                                                                                                                                                                                                                                                                                                                                                                                         “Love in the Time of Cholera” sets itself the elusive task of translating Gabriel García Márquez’s masterpiece of magical realism into an upscale art film with popular appeal. Faithful to the outline of the novel but emotionally and spiritually anemic, it slides into the void between art and entertainment, where well-intended would-be screen epics often land with a thud.
+  print_section print_page             source
+1             2         21 The New York Times
+2             C         13 The New York Times
+3             E          5 The New York Times
+4             E         30 The New York Times
+5             C          8 The New York Times
+6             E          1 The New York Times
+                                                                                                                                                                                                                                                                                                                                                                                                                                                  multimedia
+1                                                                                                                                                                                                                                                                                                                                                                                                                                                       NULL
+2                                                                                                                                                                                                                                                                                                                                                                                                                                                       NULL
+3                                                                                                                                                                                                                                                                                                                                                                                                                                                       NULL
+4                                                                                                                                                                                                                                                                                                                                                                                                                                                       NULL
+5                                                                                                                                                                                                                                                                                                                                                                                                                                                       NULL
+6 0, 0, 0, xlarge, popup, thumbnail, NA, NA, NA, NA, NA, NA, image, image, image, images/2007/11/16/arts/16cholera-600.jpg, images/2007/11/16/arts/16cholera-600.jpg, images/2007/11/16/arts/16cholera-75.jpg, 330, 330, 75, 600, 600, 75, xlarge, popup, thumbnail, articleLarge, popup, thumbStandard, images/2007/11/16/arts/16cholera-600.jpg, NA, NA, 600, NA, NA, 330, NA, NA, NA, NA, images/2007/11/16/arts/16cholera-75.jpg, NA, NA, 75, NA, NA, 75
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          keywords
+1                                                                                                                                                                                                                                                                                                                                                                                                 subject, subject, creative_works, MOTION PICTURES, REVIEW, Rear Window (Movie), 1, 2, 3, N, N, N
+2                                                                                                                                                                                                                                                                                                                                                                                             subject, subject, creative_works, MOTION PICTURES, REVIEW, WHITE ROSE, THE (MOVIE), 1, 2, 3, N, N, N
+3                                                                                                                                                                                                                                                                                                                                                                                                                                                                   subject, MOTION PICTURES, 1, N
+4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             NULL
+5 organizations, persons, persons, persons, persons, persons, persons, subject, subject, subject, creative_works, creative_works, ISLAND PICTURES, BALLHAUS, MICHAEL, Fassbinder, Rainer Werner, BROKAW, CARY, Ford, Harrison, SCHWARTZ, RUSSELL, Weir, Peter, Suspensions, Dismissals and Resignations, Appointments and Executive Changes, MOTION PICTURES, GLASS MENAGERIE, THE (MOVIE), MOSQUITO COAST, THE (MOVIE), 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, N, N, N, N, N, N, N, N, N, N, N, N
+6                                                                                                                                                                                                                                                                                                                                       subject, persons, persons, persons, persons, MOTION PICTURES, Newell, Mike, Harwood, Ronald, Bardem, Javier, Bratt, Benjamin, 1, 2, 3, 4, 5, N, N, N, N, N
+                  pub_date document_type                            news_desk
+1 1983-10-09T05:00:00+0000       article                Arts and Leisure Desk
+2 1983-05-06T05:00:00+0000       article                         Weekend Desk
+3 2006-06-08T04:00:00+0000       article                              Culture
+4 2000-12-08T05:00:00+0000       article Movies, Performing Arts/Weekend Desk
+5 1986-11-21T05:00:00+0000       article                         Weekend Desk
+6 2007-11-16T05:00:00+0000       article                              Weekend
+  section_name type_of_material
+1       Movies           Review
+2       Movies           Review
+3       Movies           Review
+4       Movies           Review
+5       Movies           Review
+6       Movies           Review
+                                                  id word_count
+1 nyt://article/08bc53b8-7807-509a-ae15-bbf3862ce15f       1314
+2 nyt://article/08c254dd-9973-56cb-b43f-f1b458d2b115        875
+3 nyt://article/08c2f145-05b6-5da4-959a-1e2a5736037c        331
+4 nyt://article/08c37cf0-dc6a-5da8-99ba-6016989f0454        248
+5 nyt://article/08c710e7-61aa-55ee-94ff-e56d53b15ce0       1627
+6 nyt://article/08c97d6c-026c-5269-b609-a13b47e97a6a       1006
+                                                 uri
+1 nyt://article/08bc53b8-7807-509a-ae15-bbf3862ce15f
+2 nyt://article/08c254dd-9973-56cb-b43f-f1b458d2b115
+3 nyt://article/08c2f145-05b6-5da4-959a-1e2a5736037c
+4 nyt://article/08c37cf0-dc6a-5da8-99ba-6016989f0454
+5 nyt://article/08c710e7-61aa-55ee-94ff-e56d53b15ce0
+6 nyt://article/08c97d6c-026c-5269-b609-a13b47e97a6a
+                                                     headline_main
+1                             ...AND JAMES STEWART RECALLS 'HITCH'
+2                         'THE WHITE ROSE,' STUDENTS AGAINST NAZIS
+3           Sexual Deviations on Parade in 'Psychopathia Sexualis'
+4 Reissues; Albums Wishing You a Merry With a Ha-Ha and a Ho-Ho-Ho
+5                                                    AT THE MOVIES
+6                          50 Years and 600 Women Later, True Love
+                               headline_kicker headline_content_kicker
+1                                         &lt;NA&gt;                      NA
+2                                         &lt;NA&gt;                      NA
+3                                 Movie Review                      NA
+4                                         &lt;NA&gt;                      NA
+5                                         &lt;NA&gt;                      NA
+6 Movie Review | 'Love in the Time of Cholera'                      NA
+                                           headline_print_headline
+1                             ...AND JAMES STEWART RECALLS 'HITCH'
+2                         'THE WHITE ROSE,' STUDENTS AGAINST NAZIS
+3         Sexual Deviations on Parade, Yet Strangely Unstimulating
+4 Reissues; Albums Wishing You a Merry With a Ha-Ha and a Ho-Ho-Ho
+5                                                    AT THE MOVIES
+6                          50 Years and 600 Women Later, True Love
+  headline_name headline_seo headline_sub        byline_original
+1            NA           NA           NA        By Janet Maslin
+2            NA           NA           NA        By Janet Maslin
+3            NA           NA           NA By Jeannette Catsoulis
+4            NA           NA           NA         By Jon Pareles
+5            NA           NA           NA        By Nina Darnton
+6            NA           NA           NA      By Stephen Holden
+                                    byline_person byline_organization
+1        Janet, NA, Maslin, NA, NA, reported, , 1                &lt;NA&gt;
+2        Janet, NA, Maslin, NA, NA, reported, , 1                &lt;NA&gt;
+3 Jeannette, NA, Catsoulis, NA, NA, reported, , 1                &lt;NA&gt;
+4         Jon, NA, Pareles, NA, NA, reported, , 1                &lt;NA&gt;
+5        Nina, NA, Darnton, NA, NA, reported, , 1                &lt;NA&gt;
+6      Stephen, NA, Holden, NA, NA, reported, , 1                &lt;NA&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="cleaning-nyt-data" class="level2">
+<h2 class="anchored" data-anchor-id="cleaning-nyt-data">Cleaning NYT data</h2>
+<p>Before we finalize this data set, we subset the data frame to our variables of interest and do some data transformation operations:</p>
+<ul>
+<li><p>The <code>keywords</code> variable in the original data frame was a list-column. The <code>name</code> of the movie is tagged as a keyword in each review article. We unnest this list-column variable to extract the movie <code>name</code>.</p></li>
+<li><p>Clean the movie <code>name</code> by</p>
+<ul>
+<li><p>converting all characters to lowercase</p></li>
+<li><p>removing parentheticals in the string for matching using REGEX</p></li>
+<li><p>removing any “, the” at the end of any movie names in the NYT data</p></li>
+</ul></li>
+<li><p>Convert NYT publication date column <code>pub_date</code> to a datetime format.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define REGEX patterns</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>media_pattern <span class="ot">&lt;-</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">".*</span><span class="sc">\\</span><span class="st">(([^</span><span class="sc">\\</span><span class="st">(</span><span class="sc">\\</span><span class="st">)]+)</span><span class="sc">\\</span><span class="st">)$"</span> <span class="co"># to get media type (e.g., "movie", "play", etc.), pull text in final parenthetical of movie title</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>name_pattern <span class="ot">&lt;-</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"(.*) </span><span class="sc">\\</span><span class="st">(([^</span><span class="sc">\\</span><span class="st">(</span><span class="sc">\\</span><span class="st">)]+)</span><span class="sc">\\</span><span class="st">)$"</span> <span class="co"># to get movie title on it's own, remove final parenthetical</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>the_pattern <span class="ot">&lt;-</span> <span class="st">"^the</span><span class="sc">\\</span><span class="st">s"</span> <span class="co"># to remove "the" from beginning of movie title</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>comma_the_pattern <span class="ot">&lt;-</span> <span class="st">",</span><span class="sc">\\</span><span class="st">sthe$"</span> <span class="co"># to remove ", the" from end of movie title</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>a_pattern <span class="ot">&lt;-</span> <span class="st">"^a</span><span class="sc">\\</span><span class="st">s"</span> <span class="co"># to remove "a" from beginning of movie title</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>comma_a_pattern <span class="ot">&lt;-</span> <span class="st">",</span><span class="sc">\\</span><span class="st">sa$"</span> <span class="co"># to remove ", a" from end of movie title</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>nyt_movies <span class="ot">&lt;-</span>  nyt_movies_raw <span class="sc">|&gt;</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Unnest `keywords` list variable</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(keywords, <span class="at">keep_empty =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Correct date column format</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">pub_date =</span> <span class="fu">as_datetime</span>(pub_date),</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">media =</span> <span class="fu">str_match</span>(value, media_pattern)[, <span class="dv">2</span>] <span class="sc">|&gt;</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tolower</span>(),</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Clean movie titles, removing "the"</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="fu">str_match</span>(value, name_pattern)[, <span class="dv">2</span>] <span class="sc">|&gt;</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tolower</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(comma_the_pattern, <span class="st">""</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(the_pattern, <span class="st">""</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(a_pattern, <span class="st">""</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(comma_a_pattern, <span class="st">""</span>)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter data to movies only (removing keyword rows for crew, other types of media, etc.)</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(media <span class="sc">==</span> <span class="st">"movie"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reorder reviews by publication date</span></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(pub_date)) <span class="sc">|&gt;</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select variables of interest: columns w/ text for sentiment analysis and merging</span></span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>    abstract,</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>    web_url,</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    pub_date,</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>    headline_main,</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>    headline_kicker,</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>    headline_print_headline</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(nyt_movies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 7
+  abstract       web_url name  pub_date            headline_main headline_kicker
+  &lt;chr&gt;          &lt;chr&gt;   &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;         &lt;chr&gt;          
+1 Sex, death an… https:… prin… 2024-05-09 11:00:09 ‘A Prince’ R… Critic’s Pick  
+2 Ryusuke Hamag… https:… evil… 2024-05-02 16:40:16 ‘Evil Does N… Critic’s Pick  
+3 The second fe… https:… slow  2024-05-02 13:51:05 ‘Slow’ Revie… &lt;NA&gt;           
+4 An outstandin… https:… i sa… 2024-05-02 09:03:05 ‘I Saw the T… Critic’s Pick  
+5 Guy Ritchie’s… https:… mini… 2024-04-18 17:17:18 ‘The Ministr… &lt;NA&gt;           
+6 A college pro… https:… lous… 2024-03-28 11:00:11 ‘Lousy Carte… &lt;NA&gt;           
+# ℹ 1 more variable: headline_print_headline &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>Above is our merged data set.</p>
+</section>
+<section id="load-letterboxd-data-and-clean" class="level2">
+<h2 class="anchored" data-anchor-id="load-letterboxd-data-and-clean">Load Letterboxd data and clean</h2>
+<p>Load Letterboxd data and clean variables. We perform the same cleaning transformations to the movie <code>name</code> variable that we did with the variable of the same name in the NYT data above. Also, we drop movies released before the earliest review in the NYT data (1981-03-27 05:00:00); we don’t want to merge these older Letterboxd movies since it’s unlikely that an NYT critic would review a movie more than a year after its release.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load letterboxd data</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>letterboxd_movies <span class="ot">&lt;-</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_csv</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://raw.githubusercontent.com/naomibuell/DATA607_FinalProject/main/movies_trimmed.csv"</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(minute) <span class="sc">|&gt;</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="fu">tolower</span>(name) <span class="sc">|&gt;</span> <span class="co"># switching movie names to lower case</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Use str_match() with the pattern</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(comma_the_pattern, <span class="st">""</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(the_pattern, <span class="st">""</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(a_pattern, <span class="st">""</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(comma_a_pattern, <span class="st">""</span>)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(id)) <span class="sc">|&gt;</span> </span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># only keep Letterboxd data within a similar date range to the NYT data</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="fu">year</span>(<span class="fu">min</span>(nyt_movies<span class="sc">$</span>pub_date)) <span class="sc">-</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 85614 Columns: 7
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (3): name, tagline, description
+dbl (4): id, date, minute, rating
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(letterboxd_movies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  name                               date tagline      description minute rating
+  &lt;chr&gt;                             &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;
+1 barbie                             2023 She's every… "Barbie an…    114   3.91
+2 parasite                           2019 Act like yo… "All unemp…    133   4.57
+3 everything everywhere all at once  2022 The univers… "An aging …    140   4.32
+4 fight club                         1999 Mischief. M… "A ticking…    139   4.27
+5 interstellar                       2014 Mankind was… "The adven…    169   4.32
+6 joker                              2019 Put on a ha… "During th…    122   3.83</code></pre>
+</div>
+</div>
+</section>
+<section id="merge-nyt-and-letterboxd-data" class="level2">
+<h2 class="anchored" data-anchor-id="merge-nyt-and-letterboxd-data">Merge NYT and Letterboxd Data</h2>
+<p>Below, we merge this NYT data with Letterboxd data based on movie <code>name</code>. We also pick the best matches based on when the NYT critic reviewed the movie and when Letterboxd says the movie was released, assuming a true match would show the movie reviewed by NYT right when it came out (since Letterboxd only posts the year of release and not the full date, we assume all movies came out on Christmas day for the purposes of this calculation).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First, merge datasets by name. This is a many to many join, so movie-review rows will not be unique, with some extra matches done in error.</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>merged <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(nyt_movies, letterboxd_movies) <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># For movies w/ multiple matched rows, choose absolute difference in dates between sources.</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">|&gt;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># assuming all movies came out on Christmas (popular date for movie release),</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">release_date =</span> <span class="fu">as_datetime</span>(<span class="fu">paste0</span>(date, <span class="st">"-12-25"</span>)),</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate absolute diff btwn review and release date</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">dates_diff =</span> <span class="fu">abs</span>(<span class="fu">difftime</span>(pub_date, release_date, <span class="at">units =</span> <span class="st">"days"</span>))</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dates_diff <span class="sc">==</span> <span class="fu">min</span>(dates_diff)) <span class="sc">|&gt;</span> <span class="co"># for each unique name, get movie row w/ shortest diff between review and release date</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># remove any duplicated rows</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(merged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 14
+  abstract       web_url name  pub_date            headline_main headline_kicker
+  &lt;chr&gt;          &lt;chr&gt;   &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;         &lt;chr&gt;          
+1 Sex, death an… https:… prin… 2024-05-09 11:00:09 ‘A Prince’ R… Critic’s Pick  
+2 Sex, death an… https:… prin… 2024-05-09 11:00:09 ‘A Prince’ R… Critic’s Pick  
+3 Ryusuke Hamag… https:… evil… 2024-05-02 16:40:16 ‘Evil Does N… Critic’s Pick  
+4 The second fe… https:… slow  2024-05-02 13:51:05 ‘Slow’ Revie… &lt;NA&gt;           
+5 An outstandin… https:… i sa… 2024-05-02 09:03:05 ‘I Saw the T… Critic’s Pick  
+6 In this white… https:… femme 2024-03-21 11:00:06 ‘Femme’ Revi… &lt;NA&gt;           
+# ℹ 8 more variables: headline_print_headline &lt;chr&gt;, date &lt;dbl&gt;, tagline &lt;chr&gt;,
+#   description &lt;chr&gt;, minute &lt;dbl&gt;, rating &lt;dbl&gt;, release_date &lt;dttm&gt;,
+#   dates_diff &lt;drtn&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="describe-and-validate-analysis-data-set" class="level2">
+<h2 class="anchored" data-anchor-id="describe-and-validate-analysis-data-set">Describe and Validate Analysis Data set</h2>
+<p>Now that we have our analysis data set, we can perform a few statistical analyses to describe and validate the merged data. The following section checks our data set that we’ll use for analysis for outliers, consistency, completeness, and any discrepancies between the merged data sets that would indicate merge errors.</p>
+<section id="descriptive-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="descriptive-statistics">Descriptive statistics</h3>
+<p>First, we generate summary statistics and compare the distribution of the dates reported by both data sets:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>merged  <span class="sc">|&gt;</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(pub_date, date) <span class="sc">|&gt;</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    pub_date                           date     
+ Min.   :1981-03-27 05:00:00.00   Min.   :1980  
+ 1st Qu.:1995-03-07 17:00:00.00   1st Qu.:1995  
+ Median :2002-09-13 05:00:00.00   Median :2002  
+ Mean   :2005-03-26 09:47:11.39   Mean   :2005  
+ 3rd Qu.:2017-07-06 18:50:22.00   3rd Qu.:2017  
+ Max.   :2024-05-09 11:00:09.00   Max.   :2024  </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare dates for NYT and Letterboxd data</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>merged <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> pub_date, <span class="at">fill =</span> <span class="st">"Merged Review publication date (source: NYT)"</span>),</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> .<span class="dv">5</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">bins =</span>  <span class="dv">44</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> release_date, <span class="at">fill =</span> <span class="st">"Merged Movie release year (source: Letterbox)"</span>),</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> .<span class="dv">5</span>,</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">bins =</span> <span class="dv">44</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>) <span class="sc">+</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Dates, by data source"</span>,</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Date"</span>,</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frequency"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DATA607_final_project_files/figure-html/numeric%20descriptive%20stats%20-%20dates-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># examine the difference between review and release dates</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>merged <span class="sc">|&gt;</span> </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> dates_diff)) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Most movies have very little difference between timing of review and release."</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Difference between release and review date in days"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DATA607_final_project_files/figure-html/numeric%20descriptive%20stats%20-%20dates-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>merged <span class="sc">|&gt;</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dates_diff =</span> <span class="fu">as.numeric</span>(dates_diff)) <span class="sc">|&gt;</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(dates_diff) <span class="sc">|&gt;</span> </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   dates_diff       
+ Min.   :    0.086  
+ 1st Qu.:   68.062  
+ Median :  132.101  
+ Mean   :  444.391  
+ 3rd Qu.:  255.758  
+ Max.   :12761.792  </code></pre>
+</div>
+</div>
+<p>Both movie release and review publication dates align well between data sources. They start and end around the same time. Both have peaks in the early 2000’s and around 2020’s, with a major dip in the late 2000’s. This lack of data around the late 2000’s stems from the limited NYT data, not the Letterboxd data.</p>
+<p>Next we’ll check the distribution and outliers of the other numerical data, all from the Letterboxd data set:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(merged<span class="sc">$</span>minute)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    2.0    92.0   102.0   107.3   115.0   924.0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>merged <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> minute<span class="sc">/</span><span class="dv">60</span>)) <span class="sc">+</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">60</span>) <span class="sc">+</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Movie length"</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Length in hours (source: Letterboxd)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DATA607_final_project_files/figure-html/Check%20movie%20duration%20(mins)%20for%20outliers-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The distribution is centered around about 1.7 hours. There are many high outliers in terms of movie length (max 15 hours)–likely due to full television or movie series being included in the database. We elect not to remove these outliers because they can be genuine matches. For e.g., the longest film in the data, “Heimat” was 924 minutes long according to Letterboxd and was reviewed by the NYT, confirming that this chronicle of Germany “will be broadcast for the first time on cable on Bravo in eight parts.”</p>
+<p>Next we check user ratings for outliers:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(merged<span class="sc">$</span>rating)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.310   3.000   3.310   3.257   3.570   4.400 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>merged <span class="sc">|&gt;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rating)) <span class="sc">+</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"User ratings"</span>,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Average movie user rating (source: Letterboxd)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DATA607_final_project_files/figure-html/summarize%20rating-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Average movie ratings in this data-set range from 1.31 to 4.4. The average average <code>rating</code> on Letterboxd is 3.2566728. The data looks normal but is slightly left skewed. This is expected.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>merged <span class="sc">|&gt;</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rating)) <span class="sc">+</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DATA607_final_project_files/figure-html/Check%20ratings%20for%20outliers-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="data-quality-assessmentoverlap-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="data-quality-assessmentoverlap-analysis">Data Quality Assessment/Overlap Analysis</h3>
+<p>Here, we check the number of records and variables from each source that were merged. The Letterboxd data was much larger than what we pulled from NYT using the API (67984 vs.&nbsp;1000 movies long, respectively), so the NYT data was the limiting factor for the merge in terms of the length of our final data set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>perc_merged <span class="ot">&lt;-</span> <span class="fu">nrow</span>(merged)<span class="sc">/</span><span class="fu">nrow</span>(nyt_movies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>However, 100 percent of data from NYT was able to be merged with a Letterboxd rating.</p>
+<p>Here, we identify any duplicate records:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>duplicates <span class="ot">&lt;-</span> merged <span class="sc">|&gt;</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">|&gt;</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">duplicate =</span> <span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(duplicate)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(duplicates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 15
+# Groups:   name [3]
+  abstract       web_url name  pub_date            headline_main headline_kicker
+  &lt;chr&gt;          &lt;chr&gt;   &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;         &lt;chr&gt;          
+1 Sex, death an… https:… prin… 2024-05-09 11:00:09 ‘A Prince’ R… Critic’s Pick  
+2 Sex, death an… https:… prin… 2024-05-09 11:00:09 ‘A Prince’ R… Critic’s Pick  
+3 In her featur… https:… land  2021-02-11 12:00:05 ‘Land’ Revie… Critic’s Pick  
+4 In her featur… https:… land  2021-02-11 12:00:05 ‘Land’ Revie… Critic’s Pick  
+5 This Bob Nels… https:… conf… 2016-03-18 00:54:44 Review: In ‘… &lt;NA&gt;           
+6 This Bob Nels… https:… conf… 2016-03-18 00:54:44 Review: In ‘… &lt;NA&gt;           
+# ℹ 9 more variables: headline_print_headline &lt;chr&gt;, date &lt;dbl&gt;, tagline &lt;chr&gt;,
+#   description &lt;chr&gt;, minute &lt;dbl&gt;, rating &lt;dbl&gt;, release_date &lt;dttm&gt;,
+#   dates_diff &lt;drtn&gt;, duplicate &lt;lgl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>num_duplicated_rows <span class="ot">&lt;-</span> duplicates <span class="sc">|&gt;</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()<span class="sc">/</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There are 7 duplicated movies, where one movie <code>name</code> from the NYT matched to two observations with the same movie <code>name</code> (and release year) in the Letterboxd database. We can manually review to determine which observation is a true match, then drop the other observation(s). A good way to automate the checking of true matches, which may be necessary with larger datasets, could be to group by multiple columns along with <em>name</em> such as <em>pub_date</em> or <em>minute</em> (movie length). In this case, each of these are true matches, and therefore all duplicates can be removed safely.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>merged_no_dupl <span class="ot">&lt;-</span> merged <span class="sc">|&gt;</span> </span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(name, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(merged_no_dupl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 14
+  abstract       web_url name  pub_date            headline_main headline_kicker
+  &lt;chr&gt;          &lt;chr&gt;   &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;         &lt;chr&gt;          
+1 Sex, death an… https:… prin… 2024-05-09 11:00:09 ‘A Prince’ R… Critic’s Pick  
+2 Ryusuke Hamag… https:… evil… 2024-05-02 16:40:16 ‘Evil Does N… Critic’s Pick  
+3 The second fe… https:… slow  2024-05-02 13:51:05 ‘Slow’ Revie… &lt;NA&gt;           
+4 An outstandin… https:… i sa… 2024-05-02 09:03:05 ‘I Saw the T… Critic’s Pick  
+5 In this white… https:… femme 2024-03-21 11:00:06 ‘Femme’ Revi… &lt;NA&gt;           
+6 Zhang Lu’s qu… https:… shad… 2024-03-14 09:02:21 ‘The Shadowl… &lt;NA&gt;           
+# ℹ 8 more variables: headline_print_headline &lt;chr&gt;, date &lt;dbl&gt;, tagline &lt;chr&gt;,
+#   description &lt;chr&gt;, minute &lt;dbl&gt;, rating &lt;dbl&gt;, release_date &lt;dttm&gt;,
+#   dates_diff &lt;drtn&gt;</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="web-scraping-full-nyt-reviews" class="level2">
+<h2 class="anchored" data-anchor-id="web-scraping-full-nyt-reviews">Web Scraping Full NYT Reviews</h2>
+<p>As the API only provides the first paragraph/snippet from the movie review, we’ll need to scrape the HTML hosted on the NYT website for the full text. Luckily, the API provides the URI via the web_url field and every element containing review text contains the unique class StoryBodyCompanionColumn. This allows us to easily pull the text from the HTML elements as a character vector and collapse it into a single string, adding it as a new column in our data frame.</p>
+<p>We do all of this after the merging and cleaning to minimize the amount of scraping we need to perform to only the movies reviews we will be analyzing, reducing our HTML requests by almost half and memory utilization by over 2 megabytes. That may seem small, but for larger datasets, 50% reduction is a large amount.</p>
+<p>We have a NYT digital subscription, preventing any license agreement issues concerning the text.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>reviewScrape <span class="ot">&lt;-</span> <span class="cf">function</span>(url) {</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  success <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (success <span class="sc">==</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tryCatch</span>({</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>      htmlText <span class="ot">&lt;-</span> <span class="fu">read_html</span>(url) <span class="sc">|&gt;</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">html_nodes</span>(<span class="st">".StoryBodyCompanionColumn"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">html_text</span>() <span class="sc">|&gt;</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">paste0</span>()</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>      success <span class="ot">&lt;-</span> <span class="cn">TRUE</span> <span class="co"># Set success to TRUE if no error occurs</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>    }, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Error: "</span>, e))</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">Sys.sleep</span>(num_seconds)</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return review text</span></span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(htmlText)</span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(<span class="st">"reviews.rdat"</span>)) {</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">load</span>(<span class="st">"reviews.rdat"</span>)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  reviews <span class="ot">&lt;-</span> <span class="fu">lapply</span>(merged_no_dupl<span class="sc">$</span>web_url, reviewScrape)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">save</span>(reviews, <span class="at">file =</span> <span class="st">"reviews.rdat"</span>)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>merged_no_dupl<span class="sc">$</span>review <span class="ot">&lt;-</span> reviews</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="sentiment-and-regression-analysis-of-nyt-review" class="level2">
+<h2 class="anchored" data-anchor-id="sentiment-and-regression-analysis-of-nyt-review">Sentiment and Regression Analysis of NYT Review</h2>
+<p>Now that we have our merged and tidied data, we can perform some deeper analysis of these reviews provided by the NYT API. When performing sentiment analysis, choosing the right dictionary, or lexicon, is important. There already exist <a href="https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-017-0121-9">analyses of</a> <a href="https://medium.com/@laurenflynn1211/comparing-sentiment-analysis-dictionaries-in-r-c695fca64326">different lexicons</a>, but we will replicate some of those thoughts and analyses here. In general, it’s important to choose domain-specific lexicons to ensure proper sentiment analysis of words used and highest possible coverage of words in the text being analyzed.</p>
+<p>The three lexicons we’ll be utilizing against our movie reviews are AFINN, as it is a lexicon from the tidytext package we’ve used previously, VADER, a lexicon specifically attuned to sentiments expressed in social media, and labMT, as its dictionary was partially built directly from New York Times publications; they all use a numerical scale for rating the <em>positivity</em>, <em>valence,</em> or <em>happiness</em> of a word.</p>
+<p>labMT and AFINN require us to load up our dictionaries to join with our tokenized reviews, but VADER provides a useful get_vader() function that returns the score of each word in the text as well as the average.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(labMT)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>afinn <span class="ot">&lt;-</span> <span class="fu">get_sentiments</span>(<span class="st">"afinn"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Getting sentiments without a function. Get afinn and labMT sentiment by word</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>sa_afinn_labMT <span class="ot">&lt;-</span> merged_no_dupl <span class="sc">|&gt;</span> </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(review) <span class="sc">|&gt;</span> </span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, review, <span class="at">token =</span> <span class="st">"words"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(stop_words) <span class="sc">|&gt;</span> </span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(afinn) <span class="sc">|&gt;</span> </span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">afinn =</span> value) <span class="sc">|&gt;</span> </span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(labMT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(word)`
+Joining with `by = join_by(word)`
+Joining with `by = join_by(word)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get sentiment column names</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>sa_cols <span class="ot">&lt;-</span> <span class="fu">colnames</span>(sa_afinn_labMT)[<span class="dv">17</span><span class="sc">:</span><span class="fu">length</span>(<span class="fu">colnames</span>(sa_afinn_labMT))]</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="co"># get average sentiment per review</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>sa_collapsed <span class="ot">&lt;-</span> sa_afinn_labMT <span class="sc">|&gt;</span> </span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(web_url) <span class="sc">|&gt;</span> </span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(sa_cols), mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(merged_no_dupl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There was 1 warning in `summarize()`.
+ℹ In argument: `across(all_of(sa_cols), mean, na.rm = TRUE)`.
+ℹ In group 1: `web_url =
+  "https://www.nytimes.com/1981/03/27/movies/a-killer-stalks-in-eyes-of-a-stranger.html"`.
+Caused by warning:
+! The `...` argument of `across()` is deprecated as of dplyr 1.1.0.
+Supply arguments directly to `.fns` through an anonymous function instead.
+
+  # Previously
+  across(a:b, mean, na.rm = TRUE)
+
+  # Now
+  across(a:b, \(x) mean(x, na.rm = TRUE))</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(web_url)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get vader sentiment</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>sa <span class="ot">&lt;-</span> sa_collapsed <span class="sc">|&gt;</span> </span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(review) <span class="sc">|&gt;</span> </span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sapply</span>(get_vader) <span class="sc">|&gt;</span> </span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(sa_collapsed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">as.numeric</span>(sa<span class="sc">$</span>rating),sa<span class="sc">$</span>afinn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.01296589</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">as.numeric</span>(sa<span class="sc">$</span>rating),sa<span class="sc">$</span>happiness_average)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.003418552</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">as.numeric</span>(sa<span class="sc">$</span>rating),<span class="fu">as.numeric</span>(sa<span class="sc">$</span>compound))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># AFINN</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sa<span class="sc">$</span>afinn, sa<span class="sc">$</span>rating, <span class="at">main=</span><span class="st">"AFINN"</span>, <span class="at">xlab=</span><span class="st">"NYT Sentiment Mean"</span>, <span class="at">ylab=</span><span class="st">"Letterboxd Rating"</span>) </span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(sa<span class="sc">$</span>rating <span class="sc">~</span> sa<span class="sc">$</span>afinn), <span class="at">col=</span><span class="st">"darkred"</span>)</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="co"># LabMT</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sa<span class="sc">$</span>happiness_average, sa<span class="sc">$</span>rating, <span class="at">main=</span><span class="st">"LabMT"</span>, <span class="at">xlab=</span><span class="st">"NYT Sentiment Mean"</span>, <span class="at">ylab=</span><span class="st">"Letterboxd Rating"</span>)</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(sa<span class="sc">$</span>rating <span class="sc">~</span> sa<span class="sc">$</span>happiness_average), <span class="at">col=</span><span class="st">"darkred"</span>)</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a><span class="co"># VADER</span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sa<span class="sc">$</span>compound, sa<span class="sc">$</span>rating, <span class="at">main=</span><span class="st">"VADER"</span>, <span class="at">xlab=</span><span class="st">"NYT Sentiment Mean"</span>, <span class="at">ylab=</span><span class="st">"Letterboxd Rating"</span>)</span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(sa<span class="sc">$</span>rating <span class="sc">~</span> sa<span class="sc">$</span>compound), <span class="at">col=</span><span class="st">"darkred"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DATA607_final_project_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>I would expect a somewhat linear relationship between the sentiment analyses and the critic movie rating by Letterboxd, but it appears there is none. With these three lexicons, only VADER shows any kind of relationship, albeit the opposite of what we would expect. For such a niche medium as “movie reviews”, it would likely be necessary to use a specialized lexicon built around very specific terms used by movie critics, or even better to use a real ML model to infer Letterboxd rating based on sentiment.</p>
+<p>Conclusion analysis and graphic: Comparison of NYT review sentiments vs.&nbsp;Letterboxd numerical rating for matched movies. How do professional movie critics differ from Letterboxd users?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Heatmap of rating, year of review, and happiness average </span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sa, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> <span class="fu">round</span>(rating))) <span class="sc">+</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> happiness_average), <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"navy"</span>, <span class="at">high =</span> <span class="st">"pink"</span>, <span class="at">name =</span> <span class="st">"Audience Score"</span>) <span class="sc">+</span>  </span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Sentiment Scores vs. Ratings Heatmap"</span>,</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Review Year"</span>,</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Critic Rating"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DATA607_final_project_files/figure-html/conclusion%20graphic-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="reflection-on-project" class="level2">
+<h2 class="anchored" data-anchor-id="reflection-on-project">Reflection on Project</h2>
+<p>The lack of a strong linear relationship between the sentiment analyses and the critic movie rating by Letterboxd across all lexicons suggests that sentiment alone may not be a strong predictor of how critics rate movies. This indicates that other factors beyond sentiment, such as plot, acting, direction, and thematic depth, likely influence critics’ evaluations.</p>
+<p>The comparison between NYT review sentiments and Letterboxd ratings highlights potential differences in how professional movie critics and general users perceive and evaluate movies. Professional critics may focus more on aspects like cinematography, storytelling, and thematic depth, while user ratings on platforms like Letterboxd may be influenced by personal preferences, entertainment value, and emotional resonance.</p>
+<p>While VADER performed slightly better than AFINN and labMT, it still did not show a strong correlation with the Letterboxd ratings. This suggests that using generic sentiment lexicons may not capture the nuances of movie reviews accurately. Utilizing specialized lexicons tailored to movie reviews or employing machine learning models to infer ratings based on sentiment may yield better results. Initially considered but not included in the final version of this project are NRC and Loughlan lexicons, which were attempted but were redundant in the results and analysis.</p>
+<p>To better understand the differences between professional critics and Letterboxd users, future analyses could involve: Developing specialized sentiment lexicons tailored to movie reviews, capturing industry-specific terminology and critical language. Exploring additional features beyond sentiment, such as genre, directorial style, and production budget, to understand their impact on ratings.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Overall, the project underscores the complexity of movie evaluation and the importance of considering multiple factors beyond sentiment alone when analyzing critical responses. It also highlights the fact that critics and audiences do not share one opinion on movies. The conclusion graphics suggest that critics’ reviews alone may not reliably predict audience opinions on films.</p>
+<p>To effectively communicate these findings, the comparative analysis graphic illustrates the sentiment scores derived from the NYT reviews alongside the corresponding Letterboxd ratings for a set of matched movies. This visual representation can highlight the divergence between professional critics’ sentiments and user ratings, providing insights into the distinct perspectives and evaluation criteria of each group.</p>
+<p>By incorporating specialized lexicons and exploring additional features, future research can enhance our understanding of how different audiences perceive and rate movies, ultimately contributing to more nuanced and accurate analyses of film criticism.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ol type="1">
+<li>Dodds, Peter Sheridan, Kameron Decker Harris, Isabel M. Kloumann, Catherine A. Bliss, and Christopher M. Danforth. “Temporal patterns of happiness and information in a global social network: Hedonometrics and Twitter.” <em>PLoS ONE</em> 6, no. 12 (2011).</li>
+</ol>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
