@@ -1,7 +1,7 @@
 ---
 title: "Final Project"
 author: "Naomi Buell, Nick Kunze, and Kaylie Evans"
-date: Sys.Date()
+date: 5/8/2024
 format: html
 editor: visual
 ---
@@ -9,6 +9,7 @@ editor: visual
 ```{r}
 #| label: load packages
 #| message: false
+#| warning: false
 library(tidyverse)
 library(janitor)
 library(jsonlite)
@@ -48,7 +49,7 @@ base_url <-
 ```{r}
 #| include: false
 # Alternative to API key generated with the askForPassword function for the purposes of rendering my QMD
-api_key <- "mC1y5Hr361gaqmvkjHpGd6WUdiL917vA"
+api_key <- "9nfmnivLAXo5vqHyhoeuGduG3cGS6BLl"
 ```
 
 Here, we create is a function to pull data based on the filter and page number parameters, starting from the newest articles.
@@ -108,8 +109,12 @@ filter <-
   'section_name%3A%22Movies%22%20AND%20type_of_material%3A%22Review%22'
 num_pages <- 100
 num_seconds <- 9
-
-nyt_movies_raw <- get_movies(filter, num_pages, num_seconds)
+if(file.exists("nyt_movies_raw.rdat")) {
+  load("nyt_movies_raw.rdat")
+} else {
+  nyt_movies_raw <- get_movies(filter, num_pages, num_seconds)
+  save(nyt_movies_raw, file = "nyt_movies_raw.rdat")
+}
 ```
 
 Here is the R data frame of NYT JSON movie review data loaded from the NYT API:
@@ -408,7 +413,12 @@ reviewScrape <- function(url) {
 ```{r}
 #| label: scrape reviews
 
-reviews <- lapply(merged_no_dupl$web_url, reviewScrape)
+if(file.exists("reviews.rdat")) {
+  load("reviews.rdat")
+} else {
+  reviews <- lapply(merged_no_dupl$web_url, reviewScrape)
+  save(reviews, file = "reviews.rdat")
+}
 
 merged_no_dupl$review <- reviews
 ```
